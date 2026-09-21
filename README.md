@@ -241,6 +241,11 @@ switch (comando) {
     console.table(lista);
     break;
   }
+  case 'buscar': {
+    const resultados = await buscarCamperPorNombre(arg1);
+    console.table(resultados);
+    break;
+  }
 }
 ```
 
