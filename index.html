@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js Puro con EcmaScript Modules (ESM) | Ejercicio Práctico • Campuslands</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-surface: #0f1523;
+      --bg-card: #151d30;
+      --bg-code: #0b0f1a;
+      --border-subtle: #1e293b;
+      --border-accent: rgba(56, 189, 248, 0.35);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --node-green: #22c55e;
+      --node-green-glow: rgba(34, 197, 94, 0.25);
+      --campus-cyan: #38bdf8;
+      --campus-purple: #a855f7;
+      --campus-amber: #f59e0b;
+      --campus-red: #ef4444;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --transition-speed: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Top Navigation Bar */
+    header.deck-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(15, 21, 35, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      z-index: 100;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      color: #000;
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-sub {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .brand-sub { display: inline; }
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all var(--transition-speed);
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      background: #1e293b;
+      border-color: var(--campus-cyan);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-action.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--campus-cyan);
+      color: var(--campus-cyan);
+    }
+
+    .progress-bar-container {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 99;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--node-green), var(--campus-cyan));
+      box-shadow: 0 0 10px var(--node-green-glow);
+      transition: width 0.3s ease;
+    }
+
+    /* Views */
+    main.presentation-wrapper {
+      margin-top: 64px;
+      min-height: calc(100vh - 64px - 70px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    /* Slides Mode */
+    body.mode-slides .slide-item {
+      display: none;
+      width: 100%;
+      max-width: 1220px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+      animation: fadeInSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      position: relative;
+    }
+
+    body.mode-slides .slide-item.active {
+      display: block;
+    }
+
+    /* Document Mode */
+    body.mode-doc main.presentation-wrapper {
+      display: block;
+      max-width: 1080px;
+      margin: 80px auto 40px auto;
+      padding: 1rem;
+    }
+
+    body.mode-doc .slide-item {
+      display: block;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    body.mode-doc .slide-nav-dock {
+      display: none;
+    }
+
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Badges & Typography */
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--node-green);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      margin-bottom: 1.25rem;
+    }
+
+    .slide-badge.cyan {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--campus-cyan);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .slide-badge.purple {
+      background: rgba(168, 85, 247, 0.12);
+      color: var(--campus-purple);
+      border-color: rgba(168, 85, 247, 0.25);
+    }
+
+    .slide-badge.amber {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--campus-amber);
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+
+    h1.slide-title {
+      font-size: 2.15rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 0.85rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2.slide-subtitle {
+      font-size: 1.08rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 1.75rem;
+      max-width: 950px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+
+    @media (min-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 900px) {
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .card-feature {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.35rem;
+      position: relative;
+    }
+
+    .card-feature h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-feature p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--node-green);
+      color: #000;
+      font-weight: 800;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      margin-right: 0.4rem;
+    }
+
+    /* Terminal & Code Blocks */
+    .code-window {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 0.85rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .code-header {
+      background: #111726;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.45rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .mac-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mac-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #eab308; }
+    .dot-green { background: #22c55e; }
+
+    .code-title {
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    .copy-btn:hover {
+      color: var(--text-main);
+    }
+
+    pre.code-content {
+      padding: 1.15rem;
+      overflow-x: auto;
+      line-height: 1.65;
+      color: #e2e8f0;
+    }
+
+    /* Syntax Highlighting */
+    .c-comment { color: #64748b; font-style: italic; }
+    .c-keyword { color: #f43f5e; font-weight: 600; }
+    .c-func { color: #38bdf8; font-weight: 600; }
+    .c-string { color: #34d399; }
+    .c-var { color: #e2e8f0; }
+    .c-const { color: #a78bfa; }
+    .c-num { color: #fbbf24; }
+
+    /* Interactive Line-by-Line Inspector */
+    .inspector-container {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 960px) {
+      .inspector-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .code-picker-wrapper {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .code-picker-header {
+      background: #111726;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.55rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: #94a3b8;
+    }
+
+    .picker-file-info {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .code-line-picker {
+      background: var(--bg-code);
+      padding: 0.75rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      max-height: 480px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+
+    .code-row {
+      display: flex;
+      align-items: center;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      user-select: text;
+      -webkit-user-select: text;
+      border-left: 3px solid transparent;
+      min-width: max-content;
+      width: 100%;
+    }
+
+    .code-row:hover {
+      background: rgba(56, 189, 248, 0.08);
+      border-left-color: rgba(56, 189, 248, 0.5);
+    }
+
+    .code-row.active {
+      background: rgba(34, 197, 94, 0.15);
+      border-left-color: var(--node-green);
+    }
+
+    .line-num {
+      width: 34px;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      text-align: right;
+      margin-right: 1.1rem;
+      flex-shrink: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .code-row.active .line-num {
+      color: var(--node-green);
+      font-weight: 700;
+    }
+
+    .line-text {
+      white-space: pre;
+      overflow: visible;
+      text-overflow: clip;
+      color: #e2e8f0;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .explanation-panel {
+      background: #0d1322;
+      border: 1px solid var(--border-accent);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .expl-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .expl-tag {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--campus-cyan);
+    }
+
+    .expl-snippet-container {
+      margin-bottom: 1rem;
+    }
+
+    .expl-snippet-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .expl-snippet-label {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .copy-line-btn {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--campus-cyan);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.74rem;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      user-select: none;
+    }
+
+    .copy-line-btn:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: var(--campus-cyan);
+      color: #fff;
+    }
+
+    .copy-line-btn.copied {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: var(--node-green);
+      color: var(--node-green);
+    }
+
+    .expl-code-snippet {
+      background: #060913;
+      border: 1px solid #1e293b;
+      padding: 0.75rem 0.95rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #4ade80;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .expl-body h4 {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .expl-body p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 0.85rem;
+    }
+
+    .expl-impact {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid var(--campus-amber);
+      padding: 0.65rem 0.85rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.82rem;
+      color: #fde68a;
+    }
+
+    /* Simulator */
+    .cli-simulator {
+      background: #080c16;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .cli-controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .cli-btn-cmd {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--campus-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cli-btn-cmd:hover {
+      background: #1e293b;
+      border-color: var(--campus-cyan);
+      color: #fff;
+    }
+
+    .cli-btn-cmd.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--campus-cyan);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .cli-screen {
+      background: #040711;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      min-height: 160px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    .json-data-view {
+      background: #050813;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #38bdf8;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    /* Callouts */
+    .campus-callout {
+      border-left: 4px solid var(--campus-cyan);
+      background: rgba(56, 189, 248, 0.06);
+      padding: 0.9rem 1.2rem;
+      border-radius: 0 10px 10px 0;
+      margin: 1.1rem 0;
+      font-size: 0.92rem;
+      color: #e2e8f0;
+    }
+
+    .campus-callout.warning {
+      border-left-color: var(--campus-amber);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .campus-callout.success {
+      border-left-color: var(--node-green);
+      background: rgba(34, 197, 94, 0.06);
+    }
+
+    .campus-callout strong {
+      color: #fff;
+    }
+
+    .obsidian-ref-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.74rem;
+      font-family: var(--font-mono);
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .key-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin: 0 0.15rem;
+    }
+
+    /* Bottom Dock */
+    .slide-nav-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 21, 35, 0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 100;
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .slide-counter span.current {
+      color: var(--node-green);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .dock-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-nav {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.5rem 1.25rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all var(--transition-speed);
+      font-family: inherit;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: #1e293b;
+      border-color: var(--node-green);
+      color: #fff;
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-nav.primary {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      border-color: #22c55e;
+      color: #fff;
+    }
+
+    .btn-nav.primary:hover:not(:disabled) {
+      box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+    }
+
+    /* Drawer */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toc-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 440px;
+      height: 100vh;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-subtle);
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+    }
+
+    .drawer-overlay.open .toc-drawer {
+      transform: translateX(0);
+    }
+
+    .toc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .toc-list {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .toc-item {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .toc-item:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+
+    .toc-item.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--node-green);
+      border-color: rgba(34, 197, 94, 0.3);
+      font-weight: 600;
+    }
+
+    .toc-number {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #1e293b;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      color: var(--text-dim);
+    }
+
+    .toc-item.active .toc-number {
+      background: var(--node-green);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* Checklist */
+    .checklist-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.92rem;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      margin-top: 0.25rem;
+      accent-color: var(--node-green);
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="mode-slides">
+
+  <!-- Header -->
+  <header class="deck-header">
+    <div class="brand-wrap">
+      <span class="brand-badge">Campuslands</span>
+      <div class="brand-title">
+        <span>Node.js con EcmaScript Modules (ESM)</span>
+        <span class="brand-sub">— Ejercicio Práctico Guiado</span>
+      </div>
+    </div>
+    <div class="nav-controls">
+      <button class="btn-action" id="btnToggleMode" title="Alternar entre modo presentación y modo lectura (Tecla M)">
+        <span id="modeIcon">📖</span>
+        <span id="modeText">Modo Lectura</span>
+      </button>
+      <button class="btn-action" id="btnOpenToc" title="Índice de pasos del ejercicio (Tecla T)">
+        <span>📑</span>
+        <span>Pasos</span>
+      </button>
+      <button class="btn-action" id="btnFullscreen" title="Pantalla completa (Tecla F)">
+        <span>⛶</span>
+      </button>
+      <a href="https://github.com/anndreloopez012/campuslands-nodejs-ejercicio-basico-interactivo" target="_blank" rel="noopener noreferrer" class="btn-action" title="Ver código fuente en GitHub">
+        <span>🐙</span>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Deck Container -->
+  <main class="presentation-wrapper" id="deckContainer">
+
+    <!-- SLIDE 1: Portada y Reto Práctico -->
+    <section class="slide-item active" data-index="1">
+      <div class="slide-badge">⚡ Estándar Moderno • EcmaScript Modules (ESM)</div>
+      <h1 class="slide-title">Node.js Moderno con EcmaScript (ESM)</h1>
+      <h2 class="slide-subtitle">
+        El estándar oficial de JavaScript en Node.js. Aprenderemos cómo construir un ejercicio real de inicio a fin utilizando <code>import</code>, <code>export</code>, <code>"type": "module"</code> y Top-Level <code>await</code>, <strong>con explicaciones claras y detalladas</strong>.
+      </h2>
+
+      <div class="card-feature" style="border-left: 4px solid var(--node-green); margin-bottom: 1.5rem;">
+        <h3 style="color: var(--node-green);">🎯 El Ejercicio: "Campers CLI & Data Manager"</h3>
+        <p>
+          Construiremos un sistema de consola en Node.js puro para registrar, listar y consultar estudiantes de Campuslands con persistencia en <code>data/campers.json</code>, configurado 100% bajo el estándar de <strong>EcmaScript Modules</strong>.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card-feature">
+          <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">✨</div>
+          <h3>1. "type": "module"</h3>
+          <p>Activar la sintaxis moderna oficial de EcmaScript en Node sin necesidad de transpiladores como Babel.</p>
+        </div>
+        <div class="card-feature">
+          <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">📦</div>
+          <h3>2. import & export</h3>
+          <p>Modularización limpia con exportaciones nombradas y la regla obligatoria de extensiones <code>.js</code>.</p>
+        </div>
+        <div class="card-feature">
+          <div style="font-size: 1.6rem; margin-bottom: 0.4rem;">⏳</div>
+          <h3>3. Top-Level await</h3>
+          <p>Ejecutar operaciones asíncronas de disco duro directamente en el cuerpo del archivo sin funciones envoltorias.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <span class="obsidian-ref-tag">📚 Fuente Obsidian: campuslands-dev-nodejs-express (Ejercicios 04 y 09 ESM)</span>
+        <span style="font-size: 0.8rem; color: var(--text-dim);">Navega con <span class="key-badge">←</span> <span class="key-badge">→</span> o <span class="key-badge">Espacio</span></span>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: La Caja de Herramientas ESM de Node.js -->
+    <section class="slide-item" data-index="2">
+      <div class="slide-badge cyan">🧰 Caja de Herramientas ESM</div>
+      <h1 class="slide-title">¿Qué Usaremos en ESM y Para Qué Sirve?</h1>
+      <h2 class="slide-subtitle">
+        En EcmaScript Modules la sintaxis cambia respecto a CommonJS. Estos son los componentes oficiales que utilizaremos:
+      </h2>
+
+      <div class="grid-2">
+        <div class="card-feature" style="border-left: 3px solid var(--node-green);">
+          <h3><code style="color: var(--node-green);">"type": "module"</code> (package.json)</h3>
+          <p>
+            <strong>¿Para qué sirve?</strong> Le ordena al motor Node.js que interprete todos los archivos <code>.js</code> del proyecto como módulos modernos de EcmaScript, habilitando <code>import</code>, <code>export</code> y Top-Level <code>await</code>.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-left: 3px solid var(--campus-cyan);">
+          <h3><code style="color: var(--campus-cyan);">import / export</code> vs require / module.exports</h3>
+          <p>
+            <strong>¿Para qué sirve?</strong> La sintaxis estandarizada de JavaScript. Con <code>export async function agregarCamper(nombre, stack)</code> compartimos herramientas, y con <code>import { agregarCamper } from './campers.js'</code> las consumimos.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-left: 3px solid var(--campus-purple);">
+          <h3><code style="color: var(--campus-purple);">import.meta.url & fileURLToPath</code></h3>
+          <p>
+            <strong>¿Para qué sirve?</strong> En ESM la variable global <code>__dirname</code> ya no existe por diseño. Usamos <code>import.meta.url</code> y <code>fileURLToPath</code> para calcular con precisión la ruta de la carpeta actual en cualquier sistema operativo.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-left: 3px solid var(--campus-amber);">
+          <h3><code style="color: var(--campus-amber);">node:fs/promises & node:path</code></h3>
+          <p>
+            <strong>¿Para qué sirve?</strong> Los módulos nativos de Node se importan con sintaxis limpia: <code>import fs from 'node:fs/promises'</code> y <code>import path from 'node:path'</code>.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-left: 3px solid #38bdf8;">
+          <h3><code style="color: #38bdf8;">Top-Level await</code> (Nativo en ESM)</h3>
+          <p>
+            <strong>¿Para qué sirve?</strong> En ESM ya no necesitas crear una función <code>async function main()</code> para usar <code>await</code>. Puedes llamar a <code>await fs.readFile()</code> directamente en la raíz de tu script.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-left: 3px solid #f43f5e;">
+          <h3><code style="color: #f43f5e;">Regla de Extensión Obligatoria (.js)</code></h3>
+          <p>
+            <strong>¿Para qué sirve?</strong> En ESM nativo de Node.js, las importaciones relativas <strong>deben incluir siempre la extensión</strong>: <code>import './campers.js'</code> (si omites el <code>.js</code>, Node arrojará un error <code>ERR_MODULE_NOT_FOUND</code>).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: Paso 1 - Estructura Inicial -->
+    <section class="slide-item" data-index="3">
+      <div class="slide-badge"><span class="step-pill">1</span> Paso 1: Inicializar el Proyecto ESM</div>
+      <h1 class="slide-title">Creación de Carpetas y Proyecto</h1>
+      <h2 class="slide-subtitle">
+        Comenzamos desde cero en la terminal creando la estructura limpia de Campuslands.
+      </h2>
+
+      <div class="grid-2">
+        <div>
+          <div class="card-feature" style="margin-bottom: 1rem;">
+            <h3>1. Comandos en la Terminal</h3>
+            <p>Ejecuta estos comandos en tu terminal de Campuslands:</p>
+          </div>
+
+          <div class="code-window">
+            <div class="code-header">
+              <span class="code-title">Terminal</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText('mkdir campuslands-cli-esm\ncd campuslands-cli-esm\nnpm init -y\nmkdir src data\ntouch src/index.js src/campers.js .gitignore')">Copiar</button>
+            </div>
+            <pre class="code-content"><span class="c-comment"># 1. Crear carpeta del proyecto y acceder</span>
+<span class="c-keyword">$</span> mkdir campuslands-cli-esm
+<span class="c-keyword">$</span> cd campuslands-cli-esm
+
+<span class="c-comment"># 2. Generar package.json básico</span>
+<span class="c-keyword">$</span> npm init -y
+
+<span class="c-comment"># 3. Crear carpetas src (código) y data (persistencia)</span>
+<span class="c-keyword">$</span> mkdir src data
+
+<span class="c-comment"># 4. Crear archivos JavaScript principales</span>
+<span class="c-keyword">$</span> touch src/index.js src/campers.js .gitignore</pre>
+          </div>
+        </div>
+
+        <div>
+          <div class="card-feature" style="margin-bottom: 1rem;">
+            <h3>2. Estructura Resultante</h3>
+            <p>Así luce tu proyecto modular con EcmaScript:</p>
+          </div>
+
+          <div class="code-window">
+            <div class="code-header"><span class="code-title">Árbol del Proyecto</span></div>
+            <pre class="code-content">campuslands-cli-esm/
+├── .gitignore         <span class="c-comment"># Excluye node_modules y temporales</span>
+├── package.json       <span class="c-comment"># Declarará "type": "module"</span>
+├── data/              <span class="c-comment"># Almacenará campers.json</span>
+└── src/
+    ├── index.js       <span class="c-comment"># Enrutador CLI (import + process.argv)</span>
+    └── campers.js     <span class="c-comment"># Lógica de datos (export + fs/promises)</span></pre>
+          </div>
+
+          <div class="campus-callout success">
+            <strong>Arquitectura limpia:</strong> Separamos la lógica de persistencia (<code>campers.js</code>) de la interfaz de consola (<code>index.js</code>). Ambos se comunicarán mediante <code>import</code> y <code>export</code> nativos de EcmaScript.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: Paso 2 - package.json con "type": "module" -->
+    <section class="slide-item" data-index="4">
+      <div class="slide-badge"><span class="step-pill">2</span> Paso 2: Activar EcmaScript en Node</div>
+      <h1 class="slide-title">Configuración de package.json con "type": "module"</h1>
+      <h2 class="slide-subtitle">
+        La línea mágica que transforma a Node.js de CommonJS al estándar moderno de EcmaScript.
+      </h2>
+
+      <div class="grid-2">
+        <div class="code-window">
+          <div class="code-header">
+            <span class="code-title">package.json (Configurado para ESM)</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('{\n  \"name\": \"campuslands-cli-esm\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Gestor de Campers en Node.js puro con EcmaScript\",\n  \"type\": \"module\",\n  \"main\": \"src/index.js\",\n  \"scripts\": {\n    \"start\": \"node src/index.js\",\n    \"dev\": \"node --watch src/index.js\"\n  },\n  \"keywords\": [\"campuslands\", \"nodejs\", \"esm\"]\n}')">Copiar</button>
+          </div>
+          <pre class="code-content">{
+  <span class="c-string">"name"</span>: <span class="c-string">"campuslands-cli-esm"</span>,
+  <span class="c-string">"version"</span>: <span class="c-string">"1.0.0"</span>,
+  <span class="c-string">"description"</span>: <span class="c-string">"Gestor en Node puro con EcmaScript"</span>,
+  <span class="c-comment">// ¡LÍNEA OBLIGATORIA PARA ECMA SCRIPT!</span>
+  <span class="c-string">"type"</span>: <span class="c-string">"module"</span>,
+  <span class="c-string">"main"</span>: <span class="c-string">"src/index.js"</span>,
+  <span class="c-string">"scripts"</span>: {
+    <span class="c-string">"start"</span>: <span class="c-string">"node src/index.js"</span>,
+    <span class="c-string">"dev"</span>: <span class="c-string">"node --watch src/index.js"</span>
+  },
+  <span class="c-string">"keywords"</span>: [<span class="c-string">"campuslands"</span>, <span class="c-string">"nodejs"</span>, <span class="c-string">"esm"</span>],
+  <span class="c-string">"license"</span>: <span class="c-string">"ISC"</span>
+}</pre>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="card-feature" style="border-left: 3px solid var(--node-green);">
+            <h3 style="color: var(--node-green);"><code>"type": "module"</code></h3>
+            <p>
+              <strong>¿Para qué sirve?</strong> Activa el soporte de EcmaScript Modules. Si intentas usar <code>import</code> sin esta línea, Node lanzará el error: <code>SyntaxError: Cannot use import statement outside a module</code>.
+            </p>
+          </div>
+
+          <div class="card-feature">
+            <h3><code>"start": "node src/index.js"</code></h3>
+            <p>Ejecuta la aplicación con el comando estándar <code>npm start</code>.</p>
+          </div>
+
+          <div class="card-feature" style="border-left: 3px solid var(--campus-cyan);">
+            <h3 style="color: var(--campus-cyan);"><code>"dev": "node --watch src/index.js"</code></h3>
+            <p>
+              Auto-recarga nativa. Cada vez que guardes cambios en tus módulos ESM, Node reinicia el script al instante sin librerías externas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: Paso 3 - process.argv en ESM -->
+    <section class="slide-item" data-index="5">
+      <div class="slide-badge"><span class="step-pill">3</span> Paso 3: Captura de Entradas</div>
+      <h1 class="slide-title">Cómo Lee Node la Terminal: process.argv</h1>
+      <h2 class="slide-subtitle">
+        El objeto global <code>process</code> funciona de forma idéntica en ESM: empaqueta cada argumento de la terminal en un Array.
+      </h2>
+
+      <div class="grid-2">
+        <div>
+          <p style="color: var(--text-muted); margin-bottom: 0.75rem;">
+            Si un camper ejecuta este comando en su consola:
+          </p>
+          <div class="code-window">
+            <pre class="code-content"><span class="c-keyword">$</span> node src/index.js agregar "Carlos Morales" "Node.js"</pre>
+          </div>
+
+          <div class="card-feature" style="margin-top: 1rem;">
+            <h3>¿Qué genera Node internamente?</h3>
+            <p style="margin-bottom: 0.5rem;">Un array con exactamente 5 elementos:</p>
+            <ul style="margin-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); display: flex; flex-direction: column; gap: 0.35rem;">
+              <li><code>[0]</code> ➔ "/usr/local/bin/node" <span style="color: var(--text-dim);">(Binario de Node)</span></li>
+              <li><code>[1]</code> ➔ "/campuslands-cli-esm/src/index.js" <span style="color: var(--text-dim);">(Ruta del script ejecutado)</span></li>
+              <li><code>[2]</code> ➔ <strong>"agregar"</strong> <span style="color: var(--node-green); font-weight: 700;">(Comando a ejecutar)</span></li>
+              <li><code>[3]</code> ➔ <strong>"Carlos Morales"</strong> <span style="color: var(--campus-cyan);">(Argumento 1: Nombre)</span></li>
+              <li><code>[4]</code> ➔ <strong>"Node.js"</strong> <span style="color: var(--campus-cyan);">(Argumento 2: Stack)</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="code-window">
+            <div class="code-header">
+              <span class="code-title">Técnica Profesional de Desestructuración</span>
+            </div>
+            <pre class="code-content"><span class="c-comment">// src/index.js</span>
+
+<span class="c-comment">// ¿Por qué dejamos 2 espacios vacíos [, ,]?</span>
+<span class="c-comment">// Para ignorar [0] (node) y [1] (ruta del script)</span>
+<span class="c-comment">// y extraer directamente lo que el usuario escribió:</span>
+<span class="c-const">const</span> [, , <span class="c-var">comando</span>, <span class="c-var">arg1</span>, <span class="c-var">arg2</span>] = <span class="c-var">process</span>.<span class="c-var">argv</span>;
+
+<span class="c-func">console</span>.log(<span class="c-string">"Comando ingresado:"</span>, <span class="c-var">comando</span>);
+<span class="c-func">console</span>.log(<span class="c-string">"Argumento 1:"</span>, <span class="c-var">arg1</span>);
+<span class="c-func">console</span>.log(<span class="c-string">"Argumento 2:"</span>, <span class="c-var">arg2</span>);</pre>
+          </div>
+
+          <div class="campus-callout warning">
+            <strong>¿Por qué comillas dobles para nombres con espacios?</strong><br>
+            Si escribes <code>agregar Carlos Morales Node.js</code>, Node separará "Carlos" como argumento 1 y "Morales" como argumento 2. Las comillas <code>"Carlos Morales"</code> le indican a la consola que es un único string continuo.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: Paso 4 - Módulo de Persistencia en src/campers.js (Parte 1: import, fs, path, import.meta) -->
+    <section class="slide-item" data-index="6">
+      <div class="slide-badge purple"><span class="step-pill">4</span> Paso 4: Módulo de Persistencia (ESM)</div>
+      <h1 class="slide-title">Imports y Rutas Seguras en src/campers.js</h1>
+      <h2 class="slide-subtitle">
+        Haz clic en cada bloque del código para ver qué hace, cómo opera EcmaScript y por qué usamos <code>import.meta.url</code>.
+      </h2>
+
+      <div class="inspector-container">
+        <!-- Code Column -->
+        <div class="code-picker-wrapper">
+          <div class="code-picker-header">
+            <div class="picker-file-info">
+              <span class="mac-dot dot-yellow" style="width:8px; height:8px; display:inline-block; border-radius:50%; margin-right:6px;"></span>
+              <span>src/campers.js <span style="color: var(--text-dim);">(Líneas 1 a 18)</span></span>
+            </div>
+            <button class="copy-line-btn" onclick="copiarCodigoCompleto('campersPart1', this)">📋 Copiar bloque completo</button>
+          </div>
+          <div class="code-line-picker" id="campersPickerPart1">
+            <div class="code-row active" onclick="showLineDetail(1)">
+              <span class="line-num">1</span>
+              <span class="line-text"><span class="c-keyword">import</span> <span class="c-var">fs</span> <span class="c-keyword">from</span> <span class="c-string">'node:fs/promises'</span>;</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(2)">
+              <span class="line-num">2</span>
+              <span class="line-text"><span class="c-keyword">import</span> <span class="c-var">path</span> <span class="c-keyword">from</span> <span class="c-string">'node:path'</span>;</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(3)">
+              <span class="line-num">3</span>
+              <span class="line-text"><span class="c-keyword">import</span> { <span class="c-func">fileURLToPath</span> } <span class="c-keyword">from</span> <span class="c-string">'node:url'</span>;</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(4)">
+              <span class="line-num">4</span>
+              <span class="line-text"><span class="c-const">const</span> <span class="c-var">__filename</span> = <span class="c-func">fileURLToPath</span>(<span class="c-keyword">import</span>.<span class="c-var">meta</span>.<span class="c-var">url</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(5)">
+              <span class="line-num">5</span>
+              <span class="line-text"><span class="c-const">const</span> <span class="c-var">__dirname</span> = <span class="c-var">path</span>.<span class="c-func">dirname</span>(<span class="c-var">__filename</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(6)">
+              <span class="line-num">6</span>
+              <span class="line-text"><span class="c-const">const</span> <span class="c-var">RUTA_DATA</span> = <span class="c-var">path</span>.<span class="c-func">join</span>(<span class="c-var">__dirname</span>, <span class="c-string">'..'</span>, <span class="c-string">'data'</span>, <span class="c-string">'campers.json'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(7)">
+              <span class="line-num">7</span>
+              <span class="line-text"><span class="c-keyword">export async function</span> <span class="c-func">leerCampers</span>() {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(8)">
+              <span class="line-num">8</span>
+              <span class="line-text">  <span class="c-keyword">try</span> {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(9)">
+              <span class="line-num">9</span>
+              <span class="line-text">    <span class="c-const">const</span> <span class="c-var">contenido</span> = <span class="c-keyword">await</span> <span class="c-var">fs</span>.<span class="c-func">readFile</span>(<span class="c-var">RUTA_DATA</span>, <span class="c-string">'utf-8'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(10)">
+              <span class="line-num">10</span>
+              <span class="line-text">    <span class="c-keyword">return</span> <span class="c-var">JSON</span>.<span class="c-func">parse</span>(<span class="c-var">contenido</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(11)">
+              <span class="line-num">11</span>
+              <span class="line-text">  } <span class="c-keyword">catch</span> (<span class="c-var">error</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(12)">
+              <span class="line-num">12</span>
+              <span class="line-text">    <span class="c-keyword">if</span> (<span class="c-var">error</span>.<span class="c-var">code</span> === <span class="c-string">'ENOENT'</span>) { <span class="c-keyword">return</span> []; }</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(13)">
+              <span class="line-num">13</span>
+              <span class="line-text">    <span class="c-keyword">throw</span> <span class="c-var">error</span>;</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(14)">
+              <span class="line-num">14</span>
+              <span class="line-text">  }</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(15)">
+              <span class="line-num">15</span>
+              <span class="line-text">}</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(16)">
+              <span class="line-num">16</span>
+              <span class="line-text"><span class="c-keyword">export async function</span> <span class="c-func">guardarCampers</span>(<span class="c-var">lista</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(17)">
+              <span class="line-num">17</span>
+              <span class="line-text">  <span class="c-keyword">await</span> <span class="c-var">fs</span>.<span class="c-func">writeFile</span>(<span class="c-var">RUTA_DATA</span>, <span class="c-var">JSON</span>.<span class="c-func">stringify</span>(<span class="c-var">lista</span>, <span class="c-var">null</span>, <span class="c-num">2</span>), <span class="c-string">'utf-8'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail(18)">
+              <span class="line-num">18</span>
+              <span class="line-text">}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="explanation-panel" id="detailPanelPart1">
+          <div>
+            <div class="expl-header">
+              <span class="expl-tag" id="explTag">Línea 1 • import fs from 'node:fs/promises'</span>
+              <span style="font-size: 0.78rem; color: var(--text-dim);">Haz clic en cualquier línea 👈</span>
+            </div>
+            <div class="expl-snippet-bar">
+              <span class="expl-snippet-label">Línea de código completa:</span>
+              <button class="copy-line-btn" onclick="copiarSnippet('explSnippet', this)">📋 Copiar línea</button>
+            </div>
+            <div class="expl-code-snippet" id="explSnippet">import fs from 'node:fs/promises';</div>
+            <div class="expl-body">
+              <h4 id="explTitle">¿Qué hace esta línea en EcmaScript?</h4>
+              <p id="explDesc">
+                Usa la sintaxis oficial <code>import</code> de EcmaScript para traer el sistema de archivos nativo de Node. Al usar <code>/promises</code>, las operaciones de disco (leer y escribir) retornan Promesas nativas que se resuelven con <code>await</code> sin necesidad de callbacks.
+              </p>
+            </div>
+          </div>
+          <div class="expl-impact" id="explImpact">
+            <strong>Diferencia con CommonJS:</strong> En vez de <code>const fs = require('node:fs/promises')</code>, usamos <code>import fs from 'node:fs/promises'</code>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Paso 5 - Lógica y Exportaciones en src/campers.js (Parte 2: export y lógica) -->
+    <section class="slide-item" data-index="7">
+      <div class="slide-badge purple"><span class="step-pill">5</span> Paso 5: Lógica y Exportaciones (ESM)</div>
+      <h1 class="slide-title">Exportaciones y Lógica en src/campers.js</h1>
+      <h2 class="slide-subtitle">
+        Desglose de cómo exportar funciones con <code>export</code>, validar entradas y autoincrementar IDs.
+      </h2>
+
+      <div class="inspector-container">
+        <!-- Code Column -->
+        <div class="code-picker-wrapper">
+          <div class="code-picker-header">
+            <div class="picker-file-info">
+              <span class="mac-dot dot-yellow" style="width:8px; height:8px; display:inline-block; border-radius:50%; margin-right:6px;"></span>
+              <span>src/campers.js <span style="color: var(--text-dim);">(Líneas 19 a 39)</span></span>
+            </div>
+            <button class="copy-line-btn" onclick="copiarCodigoCompleto('campersPart2', this)">📋 Copiar bloque completo</button>
+          </div>
+          <div class="code-line-picker" id="campersPickerPart2">
+            <div class="code-row active" onclick="showLineDetail2(19)">
+              <span class="line-num">19</span>
+              <span class="line-text"><span class="c-keyword">export async function</span> <span class="c-func">agregarCamper</span>(<span class="c-var">nombre</span>, <span class="c-var">stack</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(20)">
+              <span class="line-num">20</span>
+              <span class="line-text">  <span class="c-keyword">if</span> (!<span class="c-var">nombre</span> || !<span class="c-var">stack</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(21)">
+              <span class="line-num">21</span>
+              <span class="line-text">    <span class="c-keyword">throw new</span> <span class="c-func">Error</span>(<span class="c-string">'Debes ingresar nombre y stack'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(22)">
+              <span class="line-num">22</span>
+              <span class="line-text">  }</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(23)">
+              <span class="line-num">23</span>
+              <span class="line-text">  <span class="c-const">const</span> <span class="c-var">campers</span> = <span class="c-keyword">await</span> <span class="c-func">leerCampers</span>();</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(24)">
+              <span class="line-num">24</span>
+              <span class="line-text">  <span class="c-const">const</span> <span class="c-var">nuevoCamper</span> = {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(25)">
+              <span class="line-num">25</span>
+              <span class="line-text">    <span class="c-var">id</span>: <span class="c-var">campers</span>.<span class="c-var">length</span> > <span class="c-num">0</span> ? <span class="c-var">campers</span>[<span class="c-var">campers</span>.<span class="c-var">length</span> - <span class="c-num">1</span>].<span class="c-var">id</span> + <span class="c-num">1</span> : <span class="c-num">1</span>,</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(26)">
+              <span class="line-num">26</span>
+              <span class="line-text">    <span class="c-var">nombre</span>: <span class="c-var">nombre</span>.<span class="c-func">trim</span>(), <span class="c-var">stack</span>: <span class="c-var">stack</span>.<span class="c-func">trim</span>(),</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(27)">
+              <span class="line-num">27</span>
+              <span class="line-text">    <span class="c-var">creadoEn</span>: <span class="c-keyword">new</span> <span class="c-func">Date</span>().<span class="c-func">toLocaleDateString</span>()</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(28)">
+              <span class="line-num">28</span>
+              <span class="line-text">  };</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(29)">
+              <span class="line-num">29</span>
+              <span class="line-text">  <span class="c-var">campers</span>.<span class="c-func">push</span>(<span class="c-var">nuevoCamper</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(30)">
+              <span class="line-num">30</span>
+              <span class="line-text">  <span class="c-keyword">await</span> <span class="c-func">guardarCampers</span>(<span class="c-var">campers</span>);</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(31)">
+              <span class="line-num">31</span>
+              <span class="line-text">  <span class="c-keyword">return</span> <span class="c-var">nuevoCamper</span>;</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(32)">
+              <span class="line-num">32</span>
+              <span class="line-text">}</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(33)">
+              <span class="line-num">33</span>
+              <span class="line-text"><span class="c-keyword">export async function</span> <span class="c-func">listarCampers</span>() {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(34)">
+              <span class="line-num">34</span>
+              <span class="line-text">  <span class="c-keyword">return await</span> <span class="c-func">leerCampers</span>();</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(35)">
+              <span class="line-num">35</span>
+              <span class="line-text">}</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(36)">
+              <span class="line-num">36</span>
+              <span class="line-text"><span class="c-keyword">export async function</span> <span class="c-func">buscarCamperPorNombre</span>(<span class="c-var">termino</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(37)">
+              <span class="line-num">37</span>
+              <span class="line-text">  <span class="c-const">const</span> <span class="c-var">campers</span> = <span class="c-keyword">await</span> <span class="c-func">leerCampers</span>();</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(38)">
+              <span class="line-num">38</span>
+              <span class="line-text">  <span class="c-keyword">return</span> <span class="c-var">campers</span>.<span class="c-func">filter</span>(<span class="c-var">c</span> => <span class="c-var">c</span>.<span class="c-var">nombre</span>.<span class="c-func">toLowerCase</span>().<span class="c-func">includes</span>(<span class="c-var">termino</span>.<span class="c-func">toLowerCase</span>()));</span>
+            </div>
+            <div class="code-row" onclick="showLineDetail2(39)">
+              <span class="line-num">39</span>
+              <span class="line-text">}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="explanation-panel" id="detailPanelPart2">
+          <div>
+            <div class="expl-header">
+              <span class="expl-tag" id="explTag2">Línea 19 • export nombrada</span>
+              <span style="font-size: 0.78rem; color: var(--text-dim);">Haz clic en cualquier línea 👈</span>
+            </div>
+            <div class="expl-snippet-bar">
+              <span class="expl-snippet-label">Línea de código completa:</span>
+              <button class="copy-line-btn" onclick="copiarSnippet('explSnippet2', this)">📋 Copiar línea</button>
+            </div>
+            <div class="expl-code-snippet" id="explSnippet2">export async function agregarCamper(nombre, stack) {</div>
+            <div class="expl-body">
+              <h4 id="explTitle2">¿Cómo funciona export en EcmaScript?</h4>
+              <p id="explDesc2">
+                En EcmaScript no usamos <code>module.exports</code>. Simplemente colocamos la palabra clave <code>export</code> antes de la función que queremos compartir. Esto se llama <strong>Exportación Nombrada (Named Export)</strong> y permite que <code>index.js</code> importe exactamente lo que necesita.
+              </p>
+            </div>
+          </div>
+          <div class="expl-impact" id="explImpact2">
+            <strong>Ventaja de ESM:</strong> El editor (VS Code) ofrece autocompletado inteligente instantáneo de las funciones exportadas.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: Paso 6 - Enrutador en src/index.js con Top-Level await -->
+    <section class="slide-item" data-index="8">
+      <div class="slide-badge cyan"><span class="step-pill">6</span> Paso 6: Enrutador de Consola (ESM)</div>
+      <h1 class="slide-title">src/index.js con Top-Level await</h1>
+      <h2 class="slide-subtitle">
+        En EcmaScript Modules podemos usar <code>await</code> directamente en la raíz del script sin funciones envoltorias.
+      </h2>
+
+      <div class="inspector-container">
+        <!-- Code Column -->
+        <div class="code-picker-wrapper">
+          <div class="code-picker-header">
+            <div class="picker-file-info">
+              <span class="mac-dot dot-green" style="width:8px; height:8px; display:inline-block; border-radius:50%; margin-right:6px;"></span>
+              <span>src/index.js <span style="color: var(--text-dim);">(Líneas 1 a 24)</span></span>
+            </div>
+            <button class="copy-line-btn" onclick="copiarCodigoCompleto('indexCode', this)">📋 Copiar archivo completo</button>
+          </div>
+          <div class="code-line-picker" id="indexPicker">
+            <div class="code-row active" onclick="showIndexDetail(1)">
+              <span class="line-num">1</span>
+              <span class="line-text"><span class="c-keyword">import</span> { <span class="c-func">agregarCamper</span>, <span class="c-func">listarCampers</span>, <span class="c-func">buscarCamperPorNombre</span> } <span class="c-keyword">from</span> <span class="c-string">'./campers.js'</span>;</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(2)">
+              <span class="line-num">2</span>
+              <span class="line-text"><span class="c-const">const</span> [, , <span class="c-var">comando</span>, <span class="c-var">arg1</span>, <span class="c-var">arg2</span>] = <span class="c-var">process</span>.<span class="c-var">argv</span>;</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(3)">
+              <span class="line-num">3</span>
+              <span class="line-text"><span class="c-keyword">try</span> {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(4)">
+              <span class="line-num">4</span>
+              <span class="line-text">  <span class="c-keyword">switch</span> (<span class="c-var">comando</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(5)">
+              <span class="line-num">5</span>
+              <span class="line-text">    <span class="c-keyword">case</span> <span class="c-string">'agregar'</span>: {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(6)">
+              <span class="line-num">6</span>
+              <span class="line-text">      <span class="c-const">const</span> <span class="c-var">c</span> = <span class="c-keyword">await</span> <span class="c-func">agregarCamper</span>(<span class="c-var">arg1</span>, <span class="c-var">arg2</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(7)">
+              <span class="line-num">7</span>
+              <span class="line-text">      <span class="c-func">console</span>.log(<span class="c-string">'✅ Camper registrado:'</span>, <span class="c-var">c</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(8)">
+              <span class="line-num">8</span>
+              <span class="line-text">      <span class="c-keyword">break</span>;</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(9)">
+              <span class="line-num">9</span>
+              <span class="line-text">    }</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(10)">
+              <span class="line-num">10</span>
+              <span class="line-text">    <span class="c-keyword">case</span> <span class="c-string">'listar'</span>: {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(11)">
+              <span class="line-num">11</span>
+              <span class="line-text">      <span class="c-const">const</span> <span class="c-var">lista</span> = <span class="c-keyword">await</span> <span class="c-func">listarCampers</span>();</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(12)">
+              <span class="line-num">12</span>
+              <span class="line-text">      <span class="c-keyword">if</span> (<span class="c-var">lista</span>.<span class="c-var">length</span> === <span class="c-num">0</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(13)">
+              <span class="line-num">13</span>
+              <span class="line-text">        <span class="c-func">console</span>.log(<span class="c-string">'ℹ️ No hay campers aún.'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(14)">
+              <span class="line-num">14</span>
+              <span class="line-text">      } <span class="c-keyword">else</span> {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(15)">
+              <span class="line-num">15</span>
+              <span class="line-text">        <span class="c-func">console</span>.table(<span class="c-var">lista</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(16)">
+              <span class="line-num">16</span>
+              <span class="line-text">      }</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(17)">
+              <span class="line-num">17</span>
+              <span class="line-text">      <span class="c-keyword">break</span>;</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(18)">
+              <span class="line-num">18</span>
+              <span class="line-text">    }</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(19)">
+              <span class="line-num">19</span>
+              <span class="line-text">    <span class="c-keyword">default</span>:</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(20)">
+              <span class="line-num">20</span>
+              <span class="line-text">      <span class="c-func">console</span>.log(<span class="c-string">'Uso: node src/index.js [listar | agregar | buscar]'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(21)">
+              <span class="line-num">21</span>
+              <span class="line-text">  }</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(22)">
+              <span class="line-num">22</span>
+              <span class="line-text">} <span class="c-keyword">catch</span> (<span class="c-var">err</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(23)">
+              <span class="line-num">23</span>
+              <span class="line-text">  <span class="c-func">console</span>.error(<span class="c-string">'❌ Error:'</span>, <span class="c-var">err</span>.<span class="c-var">message</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(24)">
+              <span class="line-num">24</span>
+              <span class="line-text">}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="explanation-panel" id="detailPanelIndex">
+          <div>
+            <div class="expl-header">
+              <span class="expl-tag" id="explTagIndex">Línea 1 • Regla de Extensión .js</span>
+              <span style="font-size: 0.78rem; color: var(--text-dim);">Haz clic en cualquier línea 👈</span>
+            </div>
+            <div class="expl-snippet-bar">
+              <span class="expl-snippet-label">Línea de código completa:</span>
+              <button class="copy-line-btn" onclick="copiarSnippet('explSnippetIndex', this)">📋 Copiar línea</button>
+            </div>
+            <div class="expl-code-snippet" id="explSnippetIndex">import { agregarCamper, listarCampers, buscarCamperPorNombre } from './campers.js';</div>
+            <div class="expl-body">
+              <h4 id="explTitleIndex">¡Regla de Oro en EcmaScript!</h4>
+              <p id="explDescIndex">
+                En EcmaScript Modules en Node.js, <strong>la extensión .js es estrictamente obligatoria</strong> en rutas relativas. Si escribes <code>from './campers'</code> sin el <code>.js</code>, Node fallará inmediatamente con el error <code>ERR_MODULE_NOT_FOUND</code>.
+              </p>
+            </div>
+          </div>
+          <div class="expl-impact" id="explImpactIndex">
+            <strong>Top-Level await en acción:</strong> Fíjate en la línea 6: escribimos <code>await agregarCamper(arg1, arg2)</code> directamente sin tener que envolverlo en una función asíncrona.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: Paso 7 - Demostración Interactiva -->
+    <section class="slide-item" data-index="9">
+      <div class="slide-badge"><span class="step-pill">7</span> Paso 7: Probar la Solución</div>
+      <h1 class="slide-title">Simulador en Vivo: ¡Prueba el Ejercicio!</h1>
+      <h2 class="slide-subtitle">
+        Presiona los botones para simular cómo responde Node.js en la terminal y cómo cambia el archivo JSON en disco.
+      </h2>
+
+      <div class="grid-2">
+        <div>
+          <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--node-green);">Terminal del Camper:</h3>
+          <div class="cli-simulator">
+            <div class="cli-controls-bar">
+              <button class="cli-btn-cmd active" onclick="execSimCmd('help')">1. Ver Ayuda</button>
+              <button class="cli-btn-cmd" onclick="execSimCmd('listarEmpty')">2. Listar (vacío)</button>
+              <button class="cli-btn-cmd" onclick="execSimCmd('agregar1')">3. Agregar Carlos</button>
+              <button class="cli-btn-cmd" onclick="execSimCmd('agregar2')">4. Agregar Sofia</button>
+              <button class="cli-btn-cmd" onclick="execSimCmd('listarFull')">5. Listar Tabla</button>
+              <button class="cli-btn-cmd" onclick="execSimCmd('buscar')">6. Buscar "Sofia"</button>
+              <button class="cli-btn-cmd" onclick="execSimCmd('error')">7. Error Validación</button>
+            </div>
+
+            <div class="cli-screen" id="simCliScreen">$ node src/index.js
+
+🚀 CAMPUSLANDS CLI - Gestor de Campers (Node.js con EcmaScript)
+Comandos disponibles:
+  node src/index.js listar
+  node src/index.js agregar &lt;nombre&gt; &lt;stack&gt;
+  node src/index.js buscar &lt;nombre&gt;</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--campus-cyan);">
+            Contenido en disco: <code>data/campers.json</code>
+          </h3>
+          <div class="json-data-view" id="simJsonView">// [ ] Archivo aún no creado (se creará al registrar el primer camper)</div>
+
+          <div class="campus-callout" style="margin-top: 1rem;">
+            <strong>Explicación para los chicos:</strong> Al pulsar <em>"Agregar Carlos"</em>, <code>fs.writeFile</code> crea el archivo físico <code>campers.json</code>. Si luego apagan la computadora y vuelven mañana, los datos seguirán allí intactos porque están guardados en el disco duro.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: Paso 8 (Plus Nativo) - Consola Interactiva con node:readline en ESM -->
+    <section class="slide-item" data-index="10">
+      <div class="slide-badge purple"><span class="step-pill">8</span> Paso 8 (Plus): Preguntas en Vivo</div>
+      <h1 class="slide-title">Preguntas Interactivas con ESM: node:readline</h1>
+      <h2 class="slide-subtitle">
+        ¿Cómo hacer preguntas interactivas en la terminal con EcmaScript sin librerías externas?
+      </h2>
+
+      <div class="grid-2">
+        <div>
+          <p style="color: var(--text-muted); margin-bottom: 0.75rem;">
+            Usamos <code>import</code> para conectar la consola de Node.js de forma 100% nativa:
+          </p>
+
+          <div class="card-feature">
+            <h3>Componentes de node:readline en ESM:</h3>
+            <ul style="margin-left: 1.25rem; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem;">
+              <li><code>import readline from 'node:readline/promises';</code></li>
+              <li><code>import { stdin as input, stdout as output } from 'node:process';</code></li>
+              <li><code>await rl.question('¿Pregunta?')</code>: Espera la respuesta del usuario en la consola.</li>
+              <li><code>rl.close()</code>: Libera la terminal para que Node termine su ejecución.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="code-window">
+            <div class="code-header">
+              <span class="code-title">src/interactivo.js (ESM)</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText('import readline from \'node:readline/promises\';\nimport { stdin as input, stdout as output } from \'node:process\';\nimport { agregarCamper } from \'./campers.js\';\n\nconst rl = readline.createInterface({ input, output });\n\ntry {\n  console.log(\'=== REGISTRO INTERACTIVO DE CAMPERS (ESM) ===\');\n  const nombre = await rl.question(\'¿Nombre del camper? \');\n  const stack = await rl.question(\'¿Stack tecnológico? \');\n  \n  const guardado = await agregarCamper(nombre, stack);\n  console.log(\'🎉 Registrado con éxito:\', guardado);\n} finally {\n  rl.close(); // ¡Obligatorio para que Node finalice!\n}')">Copiar</button>
+            </div>
+            <pre class="code-content"><span class="c-keyword">import</span> <span class="c-var">readline</span> <span class="c-keyword">from</span> <span class="c-string">'node:readline/promises'</span>;
+<span class="c-keyword">import</span> { <span class="c-var">stdin</span> <span class="c-keyword">as</span> <span class="c-var">input</span>, <span class="c-var">stdout</span> <span class="c-keyword">as</span> <span class="c-var">output</span> } <span class="c-keyword">from</span> <span class="c-string">'node:process'</span>;
+<span class="c-keyword">import</span> { <span class="c-func">agregarCamper</span> } <span class="c-keyword">from</span> <span class="c-string">'./campers.js'</span>;
+
+<span class="c-const">const</span> <span class="c-var">rl</span> = <span class="c-var">readline</span>.<span class="c-func">createInterface</span>({ <span class="c-var">input</span>, <span class="c-var">output</span> });
+
+<span class="c-keyword">try</span> {
+  <span class="c-func">console</span>.log(<span class="c-string">'=== REGISTRO INTERACTIVO DE CAMPERS (ESM) ==='</span>);
+  <span class="c-const">const</span> <span class="c-var">nombre</span> = <span class="c-keyword">await</span> <span class="c-var">rl</span>.<span class="c-func">question</span>(<span class="c-string">'¿Nombre del camper? '</span>);
+  <span class="c-const">const</span> <span class="c-var">stack</span> = <span class="c-keyword">await</span> <span class="c-var">rl</span>.<span class="c-func">question</span>(<span class="c-string">'¿Stack tecnológico? '</span>);
+
+  <span class="c-const">const</span> <span class="c-var">guardado</span> = <span class="c-keyword">await</span> <span class="c-func">agregarCamper</span>(<span class="c-var">nombre</span>, <span class="c-var">stack</span>);
+  <span class="c-func">console</span>.log(<span class="c-string">'🎉 Registrado en JSON:'</span>, <span class="c-var">guardado</span>);
+} <span class="c-keyword">finally</span> {
+  <span class="c-var">rl</span>.<span class="c-func">close</span>(); <span class="c-comment">// ¡Obligatorio para que Node no quede congelado!</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: Paso 9 - Guía de Debugging en EcmaScript -->
+    <section class="slide-item" data-index="11">
+      <div class="slide-badge amber">🐞 Guía de Depuración ESM</div>
+      <h1 class="slide-title">Los 4 Errores Clásicos en Node con EcmaScript</h1>
+      <h2 class="slide-subtitle">
+        Basado en el repositorio de <em>Debugging JS TS Node</em> de Campuslands: errores específicos de ESM y cómo resolverlos.
+      </h2>
+
+      <div class="grid-2">
+        <div class="card-feature" style="border-top: 3px solid var(--campus-red);">
+          <h3 style="color: #f87171;">1. ERR_MODULE_NOT_FOUND (Olvidar .js)</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">
+            <strong>Causa:</strong> Escribir <code>import { agregar } from './campers'</code> sin extensión.<br>
+            <strong>Solución:</strong> En ESM nativo de Node.js la extensión es obligatoria: <code>from './campers.js'</code>.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-top: 3px solid var(--campus-amber);">
+          <h3 style="color: #fbbf24;">2. ReferenceError: __dirname is not defined</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">
+            <strong>Causa:</strong> Usar la variable <code>__dirname</code> de CommonJS en un archivo ESM.<br>
+            <strong>Solución:</strong> Reemplázala con <code>fileURLToPath(import.meta.url)</code> y <code>path.dirname()</code>.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-top: 3px solid var(--campus-cyan);">
+          <h3 style="color: #38bdf8;">3. Cannot use import statement outside a module</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">
+            <strong>Causa:</strong> Usar <code>import</code> pero olvidar poner <code>"type": "module"</code> en <code>package.json</code>.<br>
+            <strong>Solución:</strong> Abre <code>package.json</code> y añade la línea <code>"type": "module"</code>.
+          </p>
+        </div>
+
+        <div class="card-feature" style="border-top: 3px solid var(--campus-purple);">
+          <h3 style="color: #c084fc;">4. SyntaxError: Unexpected token in JSON</h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">
+            <strong>Causa:</strong> El archivo <code>campers.json</code> se creó vacío (0 bytes) manualmente.<br>
+            <strong>Solución:</strong> Debe contener al menos <code>[]</code> para ser un array JSON válido, o dejar que el código lo cree con <code>fs.writeFile</code>.
+          </p>
+        </div>
+      </div>
+
+      <span class="obsidian-ref-tag" style="margin-top: 1rem;">📚 Fuente: Obsidian Vault / Memoria / campuslands-debugging-js-ts-node</span>
+    </section>
+
+    <!-- SLIDE 12: Paso 10 - Criterios de Aprobación de Campuslands -->
+    <section class="slide-item" data-index="12">
+      <div class="slide-badge"><span class="step-pill">10</span> Paso 10: Validación y Entrega</div>
+      <h1 class="slide-title">Cómo Entregar tu Ejercicio en Campuslands</h1>
+      <h2 class="slide-subtitle">
+        Criterios obligatorios de evaluación extraídos directamente de la <em>Guía para Maestros</em>.
+      </h2>
+
+      <div class="grid-2">
+        <div>
+          <h3 style="margin-bottom: 0.75rem; color: var(--node-green);">Checklist del Camper para abrir Pull Request:</h3>
+          <ul class="checklist-list" id="evalChecklist">
+            <li class="checklist-item">
+              <input type="checkbox" id="c1" onchange="updateChecklist()">
+              <label for="c1"><strong>Rama desde 'dev':</strong> Creé mi rama personal <code>nombre-apellido/ejercicio-node-esm</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" id="c2" onchange="updateChecklist()">
+              <label for="c2"><strong>Ubicación de archivos:</strong> Mi entrega está en <code>resoluciones/nombre-apellido/</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" id="c3" onchange="updateChecklist()">
+              <label for="c3"><strong>EcmaScript Modules:</strong> Resuelto usando <code>import</code>, <code>export</code> y <code>"type": "module"</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" id="c4" onchange="updateChecklist()">
+              <label for="c4"><strong>PR hacia 'dev':</strong> El Pull Request apunta a <code>dev</code> (¡NUNCA a <code>main</code>!).</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" id="c5" onchange="updateChecklist()">
+              <label for="c5"><strong>Validaciones:</strong> Maneja errores si el usuario no envía argumentos completos.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" id="c6" onchange="updateChecklist()">
+              <label for="c6"><strong>README documentado:</strong> Expliqué los comandos para agregar, listar y buscar.</label>
+            </li>
+          </ul>
+
+          <div style="margin-top: 1rem; font-size: 0.88rem; color: var(--text-dim);" id="checklistStatus">
+            Completados: 0 de 6 requisitos obligatorios
+          </div>
+        </div>
+
+        <div>
+          <div class="card-feature" style="border: 1px solid var(--campus-red); background: rgba(239, 68, 68, 0.05);">
+            <h3 style="color: #f87171;">🚫 Motivos de Rechazo Inmediato según Maestros:</h3>
+            <ul style="margin-left: 1.25rem; font-size: 0.88rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.75rem;">
+              <li>Hacer Pull Request apuntando a la rama <code>main</code> en lugar de <code>dev</code>.</li>
+              <li>Modificar archivos fuera de tu carpeta personal <code>resoluciones/</code>.</li>
+              <li>El script crashea con error no capturado cuando se envía un comando desconocido.</li>
+              <li>Subir carpetas <code>node_modules/</code> o archivos basura del sistema operativo.</li>
+            </ul>
+          </div>
+
+          <div class="campus-callout success" style="margin-top: 1rem;">
+            <strong>Feedback de Aprobación:</strong><br>
+            <em>"Aprobado: La solución usa EcmaScript Modules de forma impecable, respeta las extensiones .js y aísla la persistencia asíncrona."</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: Resumen y Reto Final -->
+    <section class="slide-item" data-index="13">
+      <div class="slide-badge cyan">🏆 Reto Final del Camper</div>
+      <h1 class="slide-title">¡Misión Cumplida! Tu Turno de Programar</h1>
+      <h2 class="slide-subtitle">
+        Has visto el ejercicio completo en EcmaScript de inicio a fin. Ahora aplícalo en tu máquina y supera el reto adicional.
+      </h2>
+
+      <div class="grid-2">
+        <div class="card-feature" style="border-left: 4px solid var(--node-green);">
+          <h3 style="color: var(--node-green);">Lo que aprendiste hoy con Node y EcmaScript:</h3>
+          <ul style="margin-left: 1.25rem; font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.75rem;">
+            <li>Cómo configurar <code>"type": "module"</code> en <code>package.json</code>.</li>
+            <li>Cómo importar y exportar módulos con <code>import</code> y <code>export</code> nativos.</li>
+            <li>Por qué las rutas relativas en ESM exigen la extensión <code>.js</code>.</li>
+            <li>Cómo reemplazar <code>__dirname</code> con <code>import.meta.url</code> y <code>fileURLToPath</code>.</li>
+            <li>Cómo aprovechar el Top-Level <code>await</code> en Node.js moderno.</li>
+          </ul>
+        </div>
+
+        <div class="card-feature" style="background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.3);">
+          <h3 style="color: var(--campus-cyan);">⚡ Reto Extra para Campers Destacados:</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.92rem; color: #cbd5e1;">
+            Agrega una nueva función exportada en <code>src/campers.js</code>:
+          </p>
+          <div class="code-window" style="font-size: 0.8rem; margin: 0.5rem 0;">
+            <pre class="code-content"><span class="c-keyword">$</span> node src/index.js eliminar 2</pre>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Exporta <code>export async function eliminarCamper(id)</code>. Debe buscar el camper con ID <code>2</code>, filtrar el array con <code>campers.filter(c => c.id !== id)</code>, guardar el archivo actualizado y mostrar confirmación en la consola.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; text-align: center; color: var(--text-dim); font-size: 0.9rem;">
+        ¡Abran sus terminales y a codear con EcmaScript Modules, campers! 🚀
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Slide Navigation Dock -->
+  <footer class="slide-nav-dock">
+    <div class="slide-counter">
+      Paso <span class="current" id="currentSlideNumber">1</span> de <span id="totalSlidesCount">13</span>
+    </div>
+
+    <div class="dock-controls">
+      <button class="btn-nav" id="btnPrevSlide" onclick="navigateSlide(-1)">
+        <span>←</span> Anterior
+      </button>
+      <button class="btn-nav primary" id="btnNextSlide" onclick="navigateSlide(1)">
+        Siguiente <span>→</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Drawer Modal -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawerOnOverlay(event)">
+    <div class="toc-drawer">
+      <div class="toc-header">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Pasos del Ejercicio (ESM)</h3>
+        <button class="btn-action" onclick="toggleTocDrawer()" style="padding: 0.2rem 0.6rem;">✕</button>
+      </div>
+      <ul class="toc-list" id="tocListContainer">
+        <!-- Rendered via JS -->
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let currentSlide = 1;
+    const slides = document.querySelectorAll('.slide-item');
+    const totalSlides = slides.length;
+    const progressBar = document.getElementById('progressBar');
+    const currentSlideNumber = document.getElementById('currentSlideNumber');
+    const totalSlidesCount = document.getElementById('totalSlidesCount');
+    const btnPrevSlide = document.getElementById('btnPrevSlide');
+    const btnNextSlide = document.getElementById('btnNextSlide');
+    const tocListContainer = document.getElementById('tocListContainer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const btnToggleMode = document.getElementById('btnToggleMode');
+    const modeIcon = document.getElementById('modeIcon');
+    const modeText = document.getElementById('modeText');
+    const btnFullscreen = document.getElementById('btnFullscreen');
+
+    totalSlidesCount.innerText = totalSlides;
+
+    // Build Table of Contents list
+    slides.forEach((slide, idx) => {
+      const title = slide.querySelector('.slide-title').innerText;
+      const li = document.createElement('li');
+      li.className = `toc-item ${idx === 0 ? 'active' : ''}`;
+      li.innerHTML = `
+        <span class="toc-number">${String(idx + 1).padStart(2, '0')}</span>
+        <span>${title}</span>
+      `;
+      li.onclick = () => {
+        goToSlide(idx + 1);
+        toggleTocDrawer();
+      };
+      tocListContainer.appendChild(li);
+    });
+
+    // Update slides display
+    function updateSlide() {
+      if (document.body.classList.contains('mode-slides')) {
+        slides.forEach((slide, idx) => {
+          if (idx + 1 === currentSlide) {
+            slide.classList.add('active');
+          } else {
+            slide.classList.remove('active');
+          }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      currentSlideNumber.innerText = currentSlide;
+      const progressPercent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      btnPrevSlide.disabled = currentSlide === 1;
+      btnNextSlide.disabled = currentSlide === totalSlides;
+
+      // Update TOC active state
+      const tocItems = document.querySelectorAll('.toc-item');
+      tocItems.forEach((item, idx) => {
+        if (idx + 1 === currentSlide) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+
+    function navigateSlide(direction) {
+      const target = currentSlide + direction;
+      if (target >= 1 && target <= totalSlides) {
+        currentSlide = target;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(slideNum) {
+      currentSlide = slideNum;
+      updateSlide();
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        navigateSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        navigateSlide(-1);
+      } else if (e.key.toLowerCase() === 't') {
+        toggleTocDrawer();
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      } else if (e.key.toLowerCase() === 'm') {
+        toggleMode();
+      }
+    });
+
+    // Drawer handling
+    function toggleTocDrawer() {
+      drawerOverlay.classList.toggle('open');
+    }
+
+    function closeDrawerOnOverlay(e) {
+      if (e.target === drawerOverlay) {
+        drawerOverlay.classList.remove('open');
+      }
+    }
+
+    document.getElementById('btnOpenToc').addEventListener('click', toggleTocDrawer);
+
+    // Mode Toggle
+    function toggleMode() {
+      if (document.body.classList.contains('mode-slides')) {
+        document.body.classList.remove('mode-slides');
+        document.body.classList.add('mode-doc');
+        modeIcon.innerText = '🖥️';
+        modeText.innerText = 'Modo Slides';
+        btnToggleMode.classList.add('active');
+      } else {
+        document.body.classList.remove('mode-doc');
+        document.body.classList.add('mode-slides');
+        modeIcon.innerText = '📖';
+        modeText.innerText = 'Modo Lectura';
+        btnToggleMode.classList.remove('active');
+        updateSlide();
+      }
+    }
+    btnToggleMode.addEventListener('click', toggleMode);
+
+    // Fullscreen Toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+    btnFullscreen.addEventListener('click', toggleFullscreen);
+
+    // ==========================================
+    // CÓDIGO COMPLETO PARA COPIADO DIRECTO
+    // ==========================================
+    const codigosCompletos = {
+      campersPart1: `import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const RUTA_DATA = path.join(__dirname, '..', 'data', 'campers.json');
+
+export async function leerCampers() {
+  try {
+    const contenido = await fs.readFile(RUTA_DATA, 'utf-8');
+    return JSON.parse(contenido);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+export async function guardarCampers(lista) {
+  await fs.writeFile(RUTA_DATA, JSON.stringify(lista, null, 2), 'utf-8');
+}`,
+      campersPart2: `export async function agregarCamper(nombre, stack) {
+  if (!nombre || !stack) {
+    throw new Error('Debes ingresar nombre y stack');
+  }
+  const campers = await leerCampers();
+  const nuevoCamper = {
+    id: campers.length > 0 ? campers[campers.length - 1].id + 1 : 1,
+    nombre: nombre.trim(),
+    stack: stack.trim(),
+    creadoEn: new Date().toLocaleDateString()
+  };
+  campers.push(nuevoCamper);
+  await guardarCampers(campers);
+  return nuevoCamper;
+}
+
+export async function listarCampers() {
+  return await leerCampers();
+}
+
+export async function buscarCamperPorNombre(termino) {
+  const campers = await leerCampers();
+  return campers.filter(c => c.nombre.toLowerCase().includes(termino.toLowerCase()));
+}`,
+      indexCode: `import { agregarCamper, listarCampers, buscarCamperPorNombre } from './campers.js';
+
+const [, , comando, arg1, arg2] = process.argv;
+
+try {
+  switch (comando) {
+    case 'agregar': {
+      const c = await agregarCamper(arg1, arg2);
+      console.log('✅ Camper registrado:', c);
+      break;
+    }
+    case 'listar': {
+      const lista = await listarCampers();
+      if (lista.length === 0) {
+        console.log('ℹ️ No hay campers aún.');
+      } else {
+        console.table(lista);
+      }
+      break;
+    }
+    default:
+      console.log('Uso: node src/index.js [listar | agregar | buscar]');
+  }
+} catch (err) {
+  console.error('❌ Error:', err.message);
+}`
+    };
+
+    function copiarTextoAlPortapapeles(texto, btn, mensajeExito) {
+      if (!btn) return;
+      const prev = btn.innerHTML;
+      const exito = () => {
+        btn.innerHTML = mensajeExito || '✓ ¡Copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = prev;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto)
+          .then(exito)
+          .catch(() => fallbackCopiar(texto, exito));
+      } else {
+        fallbackCopiar(texto, exito);
+      }
+    }
+
+    function fallbackCopiar(texto, callback) {
+      const textArea = document.createElement('textarea');
+      textArea.value = texto;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        if (callback) callback();
+      } catch (err) {
+        console.error('Error fallback copiar:', err);
+      } finally {
+        document.body.removeChild(textArea);
+      }
+    }
+
+    function copiarCodigoCompleto(key, btn) {
+      const codigo = codigosCompletos[key];
+      if (!codigo) return;
+      const msg = key === 'indexCode' ? '✓ ¡Archivo copiado!' : '✓ ¡Bloque copiado!';
+      copiarTextoAlPortapapeles(codigo, btn, msg);
+    }
+
+    function copiarSnippet(id, btn) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      copiarTextoAlPortapapeles(el.innerText, btn, '✓ ¡Línea copiada!');
+    }
+
+    // ==========================================
+    // DETALLE DE CÓDIGO (ESM)
+    // ==========================================
+    const lineDetailsPart1 = {
+      1: {
+        tag: "Línea 1 • import fs from 'node:fs/promises'",
+        snippet: "import fs from 'node:fs/promises';",
+        title: "¿Qué hace esta línea en EcmaScript?",
+        desc: "Utiliza la palabra clave oficial 'import' de EcmaScript para importar el módulo de archivos de Node.js. Al apuntar a 'node:fs/promises', todas las funciones retornan Promesas nativas que consumimos limpiamente con 'await' sin callbacks anidados. El prefijo 'node:' garantiza que proviene del núcleo nativo de Node.",
+        impact: "❌ Sin esta línea: ReferenceError: fs is not defined al intentar interactuar con el disco duro."
+      },
+      2: {
+        tag: "Línea 2 • import path from 'node:path'",
+        snippet: "import path from 'node:path';",
+        title: "¿Qué hace esta línea?",
+        desc: "Importa el manejador nativo de rutas en EcmaScript. Permite unir directorios sin preocuparse si el usuario está en Windows (que usa \\) o en Linux/Mac (que usan /).",
+        impact: "❌ Sin esta línea: El programa fallará cuando un camper intente ejecutarlo en un sistema operativo diferente."
+      },
+      3: {
+        tag: "Línea 3 • import { fileURLToPath } from 'node:url'",
+        snippet: "import { fileURLToPath } from 'node:url';",
+        title: "¿Por qué necesitamos fileURLToPath en ESM?",
+        desc: "En EcmaScript Modules la variable global antigua '__dirname' NO existe. Node provee 'import.meta.url', que es una URL de archivo (ej: 'file:///home/usuario/app.js'). 'fileURLToPath' convierte esa URL en una ruta de disco tradicional para que el sistema operativo la entienda.",
+        impact: "💡 Es la forma estándar y segura en ESM para recuperar la ubicación exacta del archivo."
+      },
+      4: {
+        tag: "Línea 4 • import.meta.url",
+        snippet: "const __filename = fileURLToPath(import.meta.url);",
+        title: "¿Qué es import.meta.url?",
+        desc: "Es un objeto especial que EcmaScript proporciona en cada módulo con metadatos del archivo en ejecución. Contiene la dirección exacta del archivo actual en formato URL.",
+        impact: "ℹ️ Reemplazo moderno y oficial de __filename en ESM."
+      },
+      5: {
+        tag: "Línea 5 • path.dirname(__filename)",
+        snippet: "const __dirname = path.dirname(__filename);",
+        title: "¿Cómo recuperamos __dirname en ESM?",
+        desc: "'path.dirname()' extrae la carpeta que contiene al archivo. Así obtenemos de forma impecable la ruta a la carpeta 'src' respetando las reglas de EcmaScript.",
+        impact: "ℹ️ En Node 20.11+ también puedes usar directamente 'import.meta.dirname'."
+      },
+      6: {
+        tag: "Línea 6 • path.join",
+        snippet: "const RUTA_DATA = path.join(__dirname, '..', 'data', 'campers.json');",
+        title: "Construcción de la ruta segura",
+        desc: "Toma '__dirname' ('src/'), sube un nivel ('..') a la raíz, entra a la carpeta 'data' y apunta a 'campers.json' usando el separador nativo del sistema operativo.",
+        impact: "❌ Si concatenas con '+': Fallará con error ENOENT en computadoras Windows."
+      },
+      7: {
+        tag: "Línea 7 • export async function leerCampers()",
+        snippet: "export async function leerCampers() {",
+        title: "¿Qué hace export en la función?",
+        desc: "En ESM, poner 'export' al inicio de la función la comparte inmediatamente hacia el exterior para que 'index.js' pueda importarla con 'import { leerCampers } from \\'./campers.js\\' '. 'async' nos permite usar 'await' dentro de ella.",
+        impact: "❌ Sin export: La función quedará privada y oculta dentro de este archivo."
+      },
+      8: {
+        tag: "Línea 8 • Bloque try",
+        snippet: "  try {",
+        title: "Zona de Protección",
+        desc: "Abre un bloque vigilado. Si la lectura del disco falla, Node no detendrá el programa abruptamente, sino que saltará al bloque 'catch' para manejar el error.",
+        impact: "ℹ️ Control de flujo seguro."
+      },
+      9: {
+        tag: "Línea 9 • fs.readFile con utf-8",
+        snippet: "    const contenido = await fs.readFile(RUTA_DATA, 'utf-8');",
+        title: "¿Qué hace fs.readFile?",
+        desc: "Lee el contenido binario del archivo en disco. El parámetro 'utf-8' es CRÍTICO: le indica a Node que traduzca los bytes a texto legible (string).",
+        impact: "❌ Si olvidas 'utf-8': Node te devolverá un Buffer binario hexadecimal en lugar de texto legible (string)."
+      },
+      10: {
+        tag: "Línea 10 • JSON.parse",
+        snippet: "    return JSON.parse(contenido);",
+        title: "De Texto plano a JavaScript",
+        desc: "Los archivos en disco solo guardan texto plano. 'JSON.parse()' analiza ese texto y lo convierte en un Array de Objetos reales de JavaScript [{ id: 1, nombre: 'Ana' }] para que podamos usar .push(), .filter(), etc.",
+        impact: "❌ Sin JSON.parse: Tendrías un string plano y no podrías acceder a camper.nombre ni a camper.id."
+      },
+      11: {
+        tag: "Línea 11 • Bloque catch",
+        snippet: "  } catch (error) {",
+        title: "Captura de Excepciones",
+        desc: "Si fs.readFile falla porque el archivo no existe o el disco está bloqueado, el objeto 'error' contiene el código del fallo para que podamos tomar una decisión inteligente.",
+        impact: "ℹ️ Permite recuperar el control del flujo del programa."
+      },
+      12: {
+        tag: "Línea 12 • Manejo de ENOENT",
+        snippet: "    if (error.code === 'ENOENT') { return []; }",
+        title: "La joya para principiantes: ENOENT",
+        desc: "'ENOENT' significa Error No Entity (el archivo todavía no existe). La primera vez que un camper corre la app, el archivo campers.json aún no existe. En vez de crashear, devolvemos un array vacío [] para que el programa inicie limpio.",
+        impact: "❌ Sin este if: La primera vez que corras tu proyecto se cerrará con un error rojo feo."
+      },
+      13: {
+        tag: "Línea 13 • Relanzar error desconocido",
+        snippet: "    throw error;",
+        title: "Seguridad de Datos",
+        desc: "Si el error NO era que faltaba el archivo (por ejemplo, si el disco está lleno o no hay permisos de lectura), dejamos que el error suba para que el desarrollador se entere del problema real.",
+        impact: "ℹ️ Evita silenciar errores graves del sistema operativo."
+      },
+      14: {
+        tag: "Línea 14 • Cierre de catch",
+        snippet: "  }",
+        title: "Fin del Bloque Catch",
+        desc: "Cierra el bloque catch que maneja los errores de lectura de archivo.",
+        impact: "ℹ️ Cierre de control de flujo."
+      },
+      15: {
+        tag: "Línea 15 • Cierre de función leerCampers",
+        snippet: "}",
+        title: "Fin de leerCampers",
+        desc: "Cierra la definición de la función asíncrona de lectura.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      16: {
+        tag: "Línea 16 • export async function guardarCampers",
+        snippet: "export async function guardarCampers(lista) {",
+        title: "Función de Persistencia ESM",
+        desc: "Función exportada que recibe el array actualizado de campers y lo guarda en el disco duro.",
+        impact: "ℹ️ Reutilizable desde cualquier otro módulo."
+      },
+      17: {
+        tag: "Línea 17 • fs.writeFile con sangría",
+        snippet: "  await fs.writeFile(RUTA_DATA, JSON.stringify(lista, null, 2), 'utf-8');",
+        title: "¿Qué hace fs.writeFile?",
+        desc: "Sobrescribe el archivo de forma segura. 'JSON.stringify(lista, null, 2)' convierte el array a texto JSON. El número '2' aplica una sangría de 2 espacios para que el archivo sea legible para ojos humanos en VS Code.",
+        impact: "❌ Si olvidas null, 2: El JSON se guardará en una sola línea larguísima sin espacios ni saltos."
+      },
+      18: {
+        tag: "Línea 18 • Cierre de guardarCampers",
+        snippet: "}",
+        title: "Fin de guardarCampers",
+        desc: "Cierra la función de escritura en disco.",
+        impact: "ℹ️ Cierre sintáctico."
+      }
+    };
+
+    function showLineDetail(lineNum) {
+      const data = lineDetailsPart1[lineNum];
+      if (!data) return;
+
+      document.getElementById('explTag').innerText = data.tag;
+      document.getElementById('explSnippet').innerText = data.snippet;
+      document.getElementById('explTitle').innerText = data.title;
+      document.getElementById('explDesc').innerHTML = data.desc;
+      document.getElementById('explImpact').innerHTML = data.impact;
+
+      const rows = document.querySelectorAll('#campersPickerPart1 .code-row');
+      rows.forEach(r => r.classList.remove('active'));
+      const row = document.querySelector(`#campersPickerPart1 .code-row[onclick*="showLineDetail(${lineNum})"]`);
+      if (row) row.classList.add('active');
+    }
+
+    // Detail Part 2
+    const lineDetailsPart2 = {
+      19: {
+        tag: "Línea 19 • export nombrada en ESM",
+        snippet: "export async function agregarCamper(nombre, stack) {",
+        title: "Exportación Nombrada Oficial",
+        desc: "En EcmaScript no usamos module.exports. La palabra 'export' antes de 'async function' expone la función directamente al exterior para que cualquier archivo que use 'import' pueda consumirla.",
+        impact: "ℹ️ Proporciona autocompletado y verificación estricta de tipos."
+      },
+      20: {
+        tag: "Línea 20 • Condicional de Validación",
+        snippet: "  if (!nombre || !stack) {",
+        title: "¿Para qué sirve validar entradas?",
+        desc: "En el backend nunca confiamos en el usuario ni en los datos de la terminal. Si el camper olvida pasar el nombre o el stack, detenemos la operación antes de crear un registro corrupto.",
+        impact: "❌ Sin validación: Se guardarían registros basura con campos vacíos que romperían el sistema."
+      },
+      21: {
+        tag: "Línea 21 • Lanzar Excepción",
+        snippet: "    throw new Error('Debes ingresar nombre y stack');",
+        title: "¿Qué es throw new Error?",
+        desc: "Detiene la ejecución de inmediato y envía el mensaje de error al bloque catch de index.js para que se le muestre al usuario de forma amigable.",
+        impact: "ℹ️ Mecanismo nativo de control de excepciones en JavaScript."
+      },
+      22: {
+        tag: "Línea 22 • Cierre de validación",
+        snippet: "  }",
+        title: "Fin de validación",
+        desc: "Cierra la condición de validación.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      23: {
+        tag: "Línea 23 • await leerCampers()",
+        snippet: "  const campers = await leerCampers();",
+        title: "Cargar Estado Actual",
+        desc: "Llama a nuestra función anterior para traer la lista de campers que ya existen en el archivo disco antes de agregar uno nuevo.",
+        impact: "❌ Sin await: campers sería una Promise pendiente y .push() fallaría inmediatamente."
+      },
+      24: {
+        tag: "Línea 24 • Objeto nuevoCamper",
+        snippet: "  const nuevoCamper = {",
+        title: "Creación del Registro",
+        desc: "Abre la estructuración del objeto con campos consistentes: id, nombre, stack y fecha de creación.",
+        impact: "ℹ️ Estructuración limpia de datos."
+      },
+      25: {
+        tag: "Línea 25 • Autoincremento de ID",
+        snippet: "    id: campers.length > 0 ? campers[campers.length - 1].id + 1 : 1,",
+        title: "Generación de ID Único",
+        desc: "Operador ternario: Si ya hay campers, toma el ID del último camper y le suma 1. Si la lista está vacía, le asigna el ID inicial 1.",
+        impact: "ℹ️ Garantiza que cada camper tenga un identificador numérico único."
+      },
+      26: {
+        tag: "Línea 26 • Sanitización con .trim()",
+        snippet: "    nombre: nombre.trim(), stack: stack.trim(),",
+        title: "Sanitización de Texto",
+        desc: "Elimina espacios en blanco accidentales al inicio o al final del texto ingresado por el usuario (ej: '  Carlos  ' pasa a ser 'Carlos').",
+        impact: "ℹ️ Mantiene la base de datos limpia y ordenada."
+      },
+      27: {
+        tag: "Línea 27 • Timestamp",
+        snippet: "    creadoEn: new Date().toLocaleDateString()",
+        title: "Fecha de Registro",
+        desc: "Añade automáticamente la fecha actual en formato local cuando se crea el camper.",
+        impact: "ℹ️ Trazabilidad de creación."
+      },
+      28: {
+        tag: "Línea 28 • Cierre del objeto",
+        snippet: "  };",
+        title: "Fin del objeto",
+        desc: "El objeto nuevoCamper está listo en la memoria RAM.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      29: {
+        tag: "Línea 29 • campers.push(nuevoCamper)",
+        snippet: "  campers.push(nuevoCamper);",
+        title: "Añadir a la lista en memoria",
+        desc: "Inserta el nuevo camper al final del array existente en la memoria RAM.",
+        impact: "ℹ️ Modifica el array local antes de persistir."
+      },
+      30: {
+        tag: "Línea 30 • await guardarCampers(campers)",
+        snippet: "  await guardarCampers(campers);",
+        title: "Persistencia Real en Disco",
+        desc: "Escribe el array actualizado en el archivo campers.json del disco duro.",
+        impact: "❌ Sin esta línea: El camper se perdería apenas el programa termine de ejecutarse."
+      },
+      31: {
+        tag: "Línea 31 • return nuevoCamper",
+        snippet: "  return nuevoCamper;",
+        title: "Confirmación",
+        desc: "Devuelve el camper creado para que index.js pueda imprimirlo en pantalla.",
+        impact: "ℹ️ Permite dar feedback al usuario."
+      },
+      32: {
+        tag: "Línea 32 • Cierre de agregarCamper",
+        snippet: "}",
+        title: "Fin de función",
+        desc: "Cierra la función agregarCamper.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      33: {
+        tag: "Línea 33 • export async function listarCampers",
+        snippet: "export async function listarCampers() {",
+        title: "Servicio de Listado ESM",
+        desc: "Exporta la función para devolver todos los campers registrados.",
+        impact: "ℹ️ Exportación nombrada reutilizable."
+      },
+      34: {
+        tag: "Línea 34 • return await leerCampers()",
+        snippet: "  return await leerCampers();",
+        title: "Lectura Asíncrona Directa",
+        desc: "Llama a leerCampers() con await para traer el array completo desde el archivo JSON.",
+        impact: "ℹ️ Retorno de la promesa resuelta."
+      },
+      35: {
+        tag: "Línea 35 • Cierre de listarCampers",
+        snippet: "}",
+        title: "Fin de listarCampers",
+        desc: "Cierra la función listarCampers.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      36: {
+        tag: "Línea 36 • export async function buscarCamperPorNombre",
+        snippet: "export async function buscarCamperPorNombre(termino) {",
+        title: "Servicio de Búsqueda ESM",
+        desc: "Exporta una función que recibe un término para buscar coincidencias de alumnos.",
+        impact: "ℹ️ Función para filtrado de datos."
+      },
+      37: {
+        tag: "Línea 37 • const campers = await leerCampers()",
+        snippet: "  const campers = await leerCampers();",
+        title: "Cargar Datos para Búsqueda",
+        desc: "Lee el archivo de campers para tener la lista actualizada antes de filtrar.",
+        impact: "ℹ️ Obtención de la lista en disco."
+      },
+      38: {
+        tag: "Línea 38 • campers.filter() insensible a mayúsculas",
+        snippet: "  return campers.filter(c => c.nombre.toLowerCase().includes(termino.toLowerCase()));",
+        title: "Filtrado con Array.prototype.filter",
+        desc: "Carga la lista y aplica '.filter()' insensible a mayúsculas comparando con '.includes()' para encontrar coincidencias parciales por nombre.",
+        impact: "ℹ️ Búsqueda nativa sin librerías externas."
+      },
+      39: {
+        tag: "Línea 39 • Cierre de buscarCamperPorNombre",
+        snippet: "}",
+        title: "Fin de función de búsqueda",
+        desc: "Cierra la función buscarCamperPorNombre.",
+        impact: "ℹ️ Cierre sintáctico."
+      }
+    };
+
+    function showLineDetail2(lineNum) {
+      const data = lineDetailsPart2[lineNum];
+      if (!data) return;
+
+      document.getElementById('explTag2').innerText = data.tag;
+      document.getElementById('explSnippet2').innerText = data.snippet;
+      document.getElementById('explTitle2').innerText = data.title;
+      document.getElementById('explDesc2').innerHTML = data.desc;
+      document.getElementById('explImpact2').innerHTML = data.impact;
+
+      const rows = document.querySelectorAll('#campersPickerPart2 .code-row');
+      rows.forEach(r => r.classList.remove('active'));
+      const row = document.querySelector(`#campersPickerPart2 .code-row[onclick*="showLineDetail2(${lineNum})"]`);
+      if (row) row.classList.add('active');
+    }
+
+    // Detail Index
+    const lineDetailsIndex = {
+      1: {
+        tag: "Línea 1 • import con extensión .js obligatoria",
+        snippet: "import { agregarCamper, listarCampers, buscarCamperPorNombre } from './campers.js';",
+        title: "Importación ESM y la regla del .js",
+        desc: "En EcmaScript Modules en Node.js, las rutas relativas DEBEN incluir siempre la extensión '.js'. Si omites el '.js' y solo pones './campers', Node arrojará de inmediato un error 'ERR_MODULE_NOT_FOUND'.",
+        impact: "⚠️ Error #1 de principiantes que migran de Webpack o CommonJS a Node nativo."
+      },
+      2: {
+        tag: "Línea 2 • process.argv",
+        snippet: "const [, , comando, arg1, arg2] = process.argv;",
+        title: "Captura de la línea de comandos",
+        desc: "process.argv contiene todas las palabras de la terminal. Saltamos los primeros 2 elementos con [, ,] para extraer directamente el 'comando' ('listar'/'agregar') y los argumentos 'arg1' y 'arg2'.",
+        impact: "ℹ️ Convierte la terminal en la interfaz de usuario de tu programa."
+      },
+      3: {
+        tag: "Línea 3 • Bloque try global",
+        snippet: "try {",
+        title: "Top-Level Control de Errores",
+        desc: "En ESM podemos abrir un bloque try/catch directamente en el nivel superior del archivo gracias a Top-Level await.",
+        impact: "ℹ️ Protege toda la ejecución contra fallos inesperados."
+      },
+      4: {
+        tag: "Línea 4 • switch (comando)",
+        snippet: "  switch (comando) {",
+        title: "Enrutador de Consola",
+        desc: "Evalúa cuál palabra escribió el camper y ejecuta el bloque de código correspondiente.",
+        impact: "ℹ️ Mantiene el código limpio y legible sin anidar diez 'if/else'."
+      },
+      5: {
+        tag: "Línea 5 • case 'agregar': {",
+        snippet: "    case 'agregar': {",
+        title: "Caso de Registro",
+        desc: "Se activa cuando el usuario escribe 'agregar'. Abrimos llaves {} para crear un ámbito de bloque limpio.",
+        impact: "ℹ️ Buenas prácticas de sintaxis en switch."
+      },
+      6: {
+        tag: "Línea 6 • Top-Level await en acción",
+        snippet: "      const c = await agregarCamper(arg1, arg2);",
+        title: "¡Top-Level await!",
+        desc: "Fíjate bien: no necesitamos ninguna función 'async function main()' que envuelva el código. En EcmaScript Modules, 'await' es válido directamente en el cuerpo del archivo.",
+        impact: "🎉 Menos código boilerplate y máxima claridad para los alumnos."
+      },
+      7: {
+        tag: "Línea 7 • console.log con el resultado",
+        snippet: "      console.log('✅ Camper registrado:', c);",
+        title: "Feedback en Terminal",
+        desc: "Muestra al usuario que la operación fue un éxito imprimiendo el objeto creado.",
+        impact: "ℹ️ Información clara para el usuario."
+      },
+      8: {
+        tag: "Línea 8 • break;",
+        snippet: "      break;",
+        title: "Sentencia break",
+        desc: "'break' es obligatorio para que el switch termine y no siga ejecutando los casos de abajo.",
+        impact: "❌ Sin break: Ejecutaría también el código de 'listar' inmediatamente por fallthrough."
+      },
+      9: {
+        tag: "Línea 9 • Cierre bloque agregar",
+        snippet: "    }",
+        title: "Fin del caso agregar",
+        desc: "Cierra el ámbito del bloque agregar.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      10: {
+        tag: "Línea 10 • case 'listar': {",
+        snippet: "    case 'listar': {",
+        title: "Caso de Listado",
+        desc: "Se activa cuando el camper escribe 'node src/index.js listar'. Abre un bloque con llaves para variables locales.",
+        impact: "ℹ️ Enrutamiento de comando."
+      },
+      11: {
+        tag: "Línea 11 • const lista = await listarCampers();",
+        snippet: "      const lista = await listarCampers();",
+        title: "Cargar listado asíncrono",
+        desc: "Llama a listarCampers() con await para obtener todos los registros del archivo JSON en disco.",
+        impact: "ℹ️ Lectura asíncrona de datos con Top-Level await."
+      },
+      12: {
+        tag: "Línea 12 • if (lista.length === 0) {",
+        snippet: "      if (lista.length === 0) {",
+        title: "Validación de Lista Vacía",
+        desc: "Verifica si el array devuelto no contiene ningún registro.",
+        impact: "ℹ️ Control de presentación en consola."
+      },
+      13: {
+        tag: "Línea 13 • Mensaje de lista vacía",
+        snippet: "        console.log('ℹ️ No hay campers aún.');",
+        title: "UX en la Consola",
+        desc: "Si la lista no tiene registros, le informa al usuario con un mensaje claro en lugar de mostrar una tabla vacía confusa.",
+        impact: "ℹ️ Excelente experiencia para el usuario."
+      },
+      14: {
+        tag: "Línea 14 • else condicional",
+        snippet: "      } else {",
+        title: "Rama con Registros Existentes",
+        desc: "Si la lista contiene al menos un camper, procede a imprimir la tabla formateada.",
+        impact: "ℹ️ Bifurcación condicional."
+      },
+      15: {
+        tag: "Línea 15 • console.table(lista)",
+        snippet: "        console.table(lista);",
+        title: "Formato visual hermoso nativo",
+        desc: "Método nativo de Node.js que renderiza automáticamente un array de objetos como una tabla con filas, columnas y encabezados en la consola sin librerías externas.",
+        impact: "🎉 Los alumnos verán una tabla ASCII profesional en su terminal."
+      },
+      16: {
+        tag: "Línea 16 • Cierre del else",
+        snippet: "      }",
+        title: "Fin de condición",
+        desc: "Cierra el bloque condicional else.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      17: {
+        tag: "Línea 17 • break del caso listar",
+        snippet: "      break;",
+        title: "Sentencia break",
+        desc: "Finaliza el bloque case 'listar' para salir del switch ordenadamente.",
+        impact: "ℹ️ Evita caer en el bloque default."
+      },
+      18: {
+        tag: "Línea 18 • Cierre bloque listar",
+        snippet: "    }",
+        title: "Fin del caso listar",
+        desc: "Termina el bloque del comando listar.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      19: {
+        tag: "Línea 19 • default:",
+        snippet: "    default:",
+        title: "Manejo de Comandos Desconocidos",
+        desc: "Si el camper escribe un comando que no existe (ej: node src/index.js saludar), el switch salta a esta sección.",
+        impact: "ℹ️ Captura de entradas no reconocidas."
+      },
+      20: {
+        tag: "Línea 20 • Menú de ayuda de consola",
+        snippet: "      console.log('Uso: node src/index.js [listar | agregar | buscar]');",
+        title: "Menú de Ayuda al Usuario",
+        desc: "Muestra la sintaxis correcta del CLI para orientar al alumno sobre los comandos disponibles.",
+        impact: "ℹ️ Guiado amigable para el alumno."
+      },
+      21: {
+        tag: "Línea 21 • Cierre del switch",
+        snippet: "  }",
+        title: "Fin del switch",
+        desc: "Cierra la estructura condicional de comandos.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      22: {
+        tag: "Línea 22 • Bloque catch global",
+        snippet: "} catch (err) {",
+        title: "Captura Global de Errores",
+        desc: "Atrapa cualquier excepción lanzada durante la ejecución del comando (por ejemplo, si faltaba el nombre del camper).",
+        impact: "ℹ️ Previene caídas bruscas del proceso de Node."
+      },
+      23: {
+        tag: "Línea 23 • console.error descriptivo",
+        snippet: "  console.error('❌ Error:', err.message);",
+        title: "Respuesta de Error Amigable",
+        desc: "Imprime el mensaje de error en rojo limpio con un icono y no muestra un stacktrace kilométrico innecesario.",
+        impact: "ℹ️ Principio de calidad en Campuslands."
+      },
+      24: {
+        tag: "Línea 24 • Cierre del try/catch",
+        snippet: "}",
+        title: "Fin del script principal",
+        desc: "Cierra el bloque try/catch global de src/index.js.",
+        impact: "ℹ️ Fin del script principal."
+      }
+    };
+
+    function showIndexDetail(lineNum) {
+      const data = lineDetailsIndex[lineNum];
+      if (!data) return;
+
+      document.getElementById('explTagIndex').innerText = data.tag;
+      document.getElementById('explSnippetIndex').innerText = data.snippet;
+      document.getElementById('explTitleIndex').innerText = data.title;
+      document.getElementById('explDescIndex').innerHTML = data.desc;
+      document.getElementById('explImpactIndex').innerHTML = data.impact;
+
+      const rows = document.querySelectorAll('#indexPicker .code-row');
+      rows.forEach(r => r.classList.remove('active'));
+      const row = document.querySelector(`#indexPicker .code-row[onclick*="showIndexDetail(${lineNum})"]`);
+      if (row) row.classList.add('active');
+    }
+
+    // ==========================================
+    // SIMULATED TERMINAL CLI (ESM)
+    // ==========================================
+    let simulatedCampers = [];
+
+    const simCommands = {
+      help: () => {
+        return `$ node src/index.js
+
+🚀 CAMPUSLANDS CLI - Gestor de Campers (Node.js con EcmaScript)
+Comandos disponibles:
+  node src/index.js listar
+  node src/index.js agregar <nombre> <stack>
+  node src/index.js buscar <nombre>`;
+      },
+      listarEmpty: () => {
+        simulatedCampers = [];
+        updateJsonView();
+        return `$ node src/index.js listar
+ℹ️ No hay campers registrados aún.`;
+      },
+      agregar1: () => {
+        const nuevo = { id: 1, nombre: "Carlos Morales", stack: "Node.js (ESM)", creadoEn: new Date().toLocaleDateString() };
+        if (!simulatedCampers.some(c => c.id === 1)) {
+          simulatedCampers.push(nuevo);
+        }
+        updateJsonView();
+        return `$ node src/index.js agregar "Carlos Morales" "Node.js (ESM)"
+✅ Camper registrado con éxito: { id: 1, nombre: 'Carlos Morales', stack: 'Node.js (ESM)', creadoEn: '${nuevo.creadoEn}' }`;
+      },
+      agregar2: () => {
+        if (!simulatedCampers.some(c => c.id === 1)) {
+          simulatedCampers.push({ id: 1, nombre: "Carlos Morales", stack: "Node.js (ESM)", creadoEn: new Date().toLocaleDateString() });
+        }
+        const nuevo = { id: 2, nombre: "Sofia Mendoza", stack: "React & ESM", creadoEn: new Date().toLocaleDateString() };
+        if (!simulatedCampers.some(c => c.id === 2)) {
+          simulatedCampers.push(nuevo);
+        }
+        updateJsonView();
+        return `$ node src/index.js agregar "Sofia Mendoza" "React & ESM"
+✅ Camper registrado con éxito: { id: 2, nombre: 'Sofia Mendoza', stack: 'React & ESM', creadoEn: '${nuevo.creadoEn}' }`;
+      },
+      listarFull: () => {
+        if (simulatedCampers.length === 0) {
+          simulatedCampers = [
+            { id: 1, nombre: "Carlos Morales", stack: "Node.js (ESM)", creadoEn: new Date().toLocaleDateString() },
+            { id: 2, nombre: "Sofia Mendoza", stack: "React & ESM", creadoEn: new Date().toLocaleDateString() }
+          ];
+        }
+        updateJsonView();
+        return `$ node src/index.js listar
+📋 Lista Oficial de Campers:
+┌─────────┬────┬──────────────────┬─────────────────┬────────────┐
+│ (index) │ id │      nombre      │      stack      │  creadoEn  │
+├─────────┼────┼──────────────────┼─────────────────┼────────────┤
+│    0    │ 1  │ 'Carlos Morales' │ 'Node.js (ESM)' │ '${simulatedCampers[0].creadoEn}' │
+│    1    │ 2  │ 'Sofia Mendoza'  │ 'React & ESM'   │ '${simulatedCampers[1].creadoEn}' │
+└─────────┴────┴──────────────────┴─────────────────┴────────────┘`;
+      },
+      buscar: () => {
+        if (simulatedCampers.length === 0) {
+          simulatedCampers = [
+            { id: 1, nombre: "Carlos Morales", stack: "Node.js (ESM)", creadoEn: new Date().toLocaleDateString() },
+            { id: 2, nombre: "Sofia Mendoza", stack: "React & ESM", creadoEn: new Date().toLocaleDateString() }
+          ];
+        }
+        updateJsonView();
+        return `$ node src/index.js buscar Sofia
+┌─────────┬────┬─────────────────┬───────────────┬────────────┐
+│ (index) │ id │     nombre      │     stack     │  creadoEn  │
+├─────────┼────┼─────────────────┼───────────────┼────────────┤
+│    0    │ 2  │ 'Sofia Mendoza' │ 'React & ESM' │ '${simulatedCampers[1].creadoEn}' │
+└─────────┴────┴─────────────────┴───────────────┴────────────┘`;
+      },
+      error: () => {
+        return `$ node src/index.js agregar "Mateo"
+❌ Error: Debes ingresar nombre y stack. Ej: node src/index.js agregar "Carlos" "NodeJS"`;
+      }
+    };
+
+    function updateJsonView() {
+      const jsonEl = document.getElementById('simJsonView');
+      if (simulatedCampers.length === 0) {
+        jsonEl.innerText = '// [ ] Archivo aún no creado (se creará al registrar el primer camper)';
+      } else {
+        jsonEl.innerText = JSON.stringify(simulatedCampers, null, 2);
+      }
+    }
+
+    function execSimCmd(cmdKey) {
+      const screenEl = document.getElementById('simCliScreen');
+      screenEl.innerText = 'Ejecutando en Node.js (EcmaScript)...';
+      setTimeout(() => {
+        screenEl.innerText = simCommands[cmdKey]();
+      }, 200);
+
+      event.target.parentElement.querySelectorAll('.cli-btn-cmd').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    // Checklist
+    function updateChecklist() {
+      const total = 6;
+      let checked = 0;
+      for (let i = 1; i <= total; i++) {
+        const box = document.getElementById('c' + i);
+        if (box && box.checked) checked++;
+      }
+      const statusEl = document.getElementById('checklistStatus');
+      statusEl.innerText = `Completados: ${checked} de ${total} requisitos obligatorios`;
+      if (checked === total) {
+        statusEl.innerHTML = `<span style="color: var(--node-green); font-weight: 700;">🎉 ¡Cumples el 100% de los criterios de la Guía de Maestros! Tu PR con EcmaScript está listo para 'dev'.</span>`;
+      }
+    }
+
+    // Initialize display
+    updateSlide();
+  </script>
+</body>
+</html>

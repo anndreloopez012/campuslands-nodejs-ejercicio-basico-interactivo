@@ -5,7 +5,12 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![Module Type](https://img.shields.io/badge/modules-ESM%20(EcmaScript)-blue.svg)](https://nodejs.org/api/esm.html)
 [![Dependencies](https://img.shields.io/badge/dependencies-0%20(100%25%20nativas)-success.svg)](package.json)
+[![GitHub Pages](https://img.shields.io/badge/Presentaci%C3%B3n-En%20Vivo%20(GitHub%20Pages)-success?style=flat&logo=github)](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)
 [![Campuslands](https://img.shields.io/badge/Campuslands-Bootcamp-orange.svg)](https://campuslands.com)
+
+> 🌐 **Presentación Interactiva en Vivo (GitHub Pages):**  
+> ¡Puedes explorar la guía didáctica interactiva directamente en tu navegador sin instalar nada!  
+> 👉 **[https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)**
 
 ---
 
@@ -34,8 +39,10 @@ campuslands-nodejs-ejercicio-basico-interactivo/
 │   ├── index.js                # Enrutador CLI principal accionado por argumentos
 │   └── interactivo.js          # Asistente de consola interactivo paso a paso con readline
 ├── .gitignore                  # Exclusión de archivos locales y temporales
+├── .nojekyll                   # Bypass de Jekyll para GitHub Pages
 ├── AGENTS.md                   # Directivas y contexto para agentes de IA (Codex / Antigravity)
 ├── CLAUDE.md                   # Directivas y contexto para Claude Code
+├── index.html                  # Presentación interactiva consumible en GitHub Pages
 ├── package.json                # Metadatos del proyecto y configuración "type": "module"
 └── README.md                   # Guía didáctica integral para campers
 ```

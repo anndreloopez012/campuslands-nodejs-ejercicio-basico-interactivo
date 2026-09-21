@@ -2,6 +2,11 @@
   "name": "campuslands-nodejs-ejercicio-basico-interactivo",
   "version": "1.0.0",
   "description": "Ejercicio práctico interactivo en Node.js puro con EcmaScript Modules (ESM) para estudiantes de Campuslands.",
+  "homepage": "https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anndreloopez012/campuslands-nodejs-ejercicio-basico-interactivo.git"
+  },
   "type": "module",
   "main": "src/index.js",
   "scripts": {
