@@ -5,12 +5,25 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![Module Type](https://img.shields.io/badge/modules-ESM%20(EcmaScript)-blue.svg)](https://nodejs.org/api/esm.html)
 [![Dependencies](https://img.shields.io/badge/dependencies-0%20(100%25%20nativas)-success.svg)](package.json)
-[![GitHub Pages](https://img.shields.io/badge/Presentaci%C3%B3n-En%20Vivo%20(GitHub%20Pages)-success?style=flat&logo=github)](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Presentaci%C3%B3n%20Interactiva%20en%20Vivo-22c55e?style=for-the-badge&logo=githubpages&logoColor=white)](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)
 [![Campuslands](https://img.shields.io/badge/Campuslands-Bootcamp-orange.svg)](https://campuslands.com)
 
-> 🌐 **Presentación Interactiva en Vivo (GitHub Pages):**  
-> ¡Puedes explorar la guía didáctica interactiva directamente en tu navegador sin instalar nada!  
-> 👉 **[https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)**
+---
+
+## 🌐 🖥️ Presentación y Laboratorio Web Interactivo (GitHub Pages)
+
+> 💡 **¿Quieres estudiar el ejercicio de inmediato sin clonar ni instalar nada?**  
+> Hemos desplegado una **versión web interactiva completa** accesible desde cualquier navegador, teléfono o tablet a través de GitHub Pages.
+
+👉 **Abre la presentación interactiva aquí:**  
+### 🔗 **[https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)**
+
+### 🎮 ¿Qué funciones interactivas encontrarás en la web?
+- 🖥️ **Simulador de Terminal en Tiempo Real (Slide 9):** Prueba cómo responden los comandos (`node src/index.js agregar`, `listar`, `buscar`) con una consola simulada antes de ejecutarlos en tu máquina.
+- 🔍 **Explorador Interactivo de Código (Slides 6, 7 y 8):** Haz clic sobre cualquier línea de código de `src/campers.js` o `src/index.js` para desplegar un panel con la explicación detallada, su propósito en Node.js y las mejores prácticas de la industria.
+- 📖 **Modo Presentación vs Modo Lectura:** Pulsa la tecla `M` o el botón superior para alternar entre diapositivas para clase o un documento continuo para lectura individual.
+- 📑 **Índice de Pasos (Tecla T):** Navega rápidamente a cualquiera de los 13 pasos pedagógicos del ejercicio.
+- 📋 **Botones de Copiado Rápido:** Copia al portapapeles cualquier archivo del proyecto con un solo clic.
 
 ---
 
@@ -82,9 +95,16 @@ Solo necesitas tener instalado en tu computadora:
 
 ## 🕹️ Modos de Uso y Ejecución
 
-El proyecto ofrece **dos formas** de interactuar con el sistema de campers:
+El proyecto ofrece **tres formas complementarias** de interactuar con el sistema de campers:
 
-### Modo 1: Comandos Directos por Consola (CLI)
+### Modo 0: Laboratorio Web Interactivo (Directo en tu Navegador)
+
+Si deseas estudiar el flujo sin instalar nada en tu computadora ni clonar el repositorio:
+👉 Abre **[https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/](https://anndreloopez012.github.io/campuslands-nodejs-ejercicio-basico-interactivo/)** y utiliza el simulador interactivo de consola en tiempo real junto al explorador de código.
+
+---
+
+### Modo 1: Comandos Directos por Consola (CLI Local)
 
 Ideal para automatizaciones, scripts o ejecución rápida mediante argumentos:
 
