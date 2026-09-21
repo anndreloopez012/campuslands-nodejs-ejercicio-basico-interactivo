@@ -1585,26 +1585,46 @@
             </div>
             <div class="code-row" onclick="showIndexDetail(19)">
               <span class="line-num">19</span>
-              <span class="line-text">    <span class="c-keyword">default</span>:</span>
+              <span class="line-text">    <span class="c-keyword">case</span> <span class="c-string">'buscar'</span>: {</span>
             </div>
             <div class="code-row" onclick="showIndexDetail(20)">
               <span class="line-num">20</span>
-              <span class="line-text">      <span class="c-func">console</span>.log(<span class="c-string">'Uso: node src/index.js [listar | agregar | buscar]'</span>);</span>
+              <span class="line-text">      <span class="c-const">const</span> <span class="c-var">hallados</span> = <span class="c-keyword">await</span> <span class="c-func">buscarCamperPorNombre</span>(<span class="c-var">arg1</span>);</span>
             </div>
             <div class="code-row" onclick="showIndexDetail(21)">
               <span class="line-num">21</span>
-              <span class="line-text">  }</span>
+              <span class="line-text">      <span class="c-func">console</span>.table(<span class="c-var">hallados</span>);</span>
             </div>
             <div class="code-row" onclick="showIndexDetail(22)">
               <span class="line-num">22</span>
-              <span class="line-text">} <span class="c-keyword">catch</span> (<span class="c-var">err</span>) {</span>
+              <span class="line-text">      <span class="c-keyword">break</span>;</span>
             </div>
             <div class="code-row" onclick="showIndexDetail(23)">
               <span class="line-num">23</span>
-              <span class="line-text">  <span class="c-func">console</span>.error(<span class="c-string">'❌ Error:'</span>, <span class="c-var">err</span>.<span class="c-var">message</span>);</span>
+              <span class="line-text">    }</span>
             </div>
             <div class="code-row" onclick="showIndexDetail(24)">
               <span class="line-num">24</span>
+              <span class="line-text">    <span class="c-keyword">default</span>:</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(25)">
+              <span class="line-num">25</span>
+              <span class="line-text">      <span class="c-func">console</span>.log(<span class="c-string">'Uso: node src/index.js [listar | agregar | buscar]'</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(26)">
+              <span class="line-num">26</span>
+              <span class="line-text">  }</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(27)">
+              <span class="line-num">27</span>
+              <span class="line-text">} <span class="c-keyword">catch</span> (<span class="c-var">err</span>) {</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(28)">
+              <span class="line-num">28</span>
+              <span class="line-text">  <span class="c-func">console</span>.error(<span class="c-string">'❌ Error:'</span>, <span class="c-var">err</span>.<span class="c-var">message</span>);</span>
+            </div>
+            <div class="code-row" onclick="showIndexDetail(29)">
+              <span class="line-num">29</span>
               <span class="line-text">}</span>
             </div>
           </div>
@@ -2121,6 +2141,11 @@ try {
       }
       break;
     }
+    case 'buscar': {
+      const hallados = await buscarCamperPorNombre(arg1);
+      console.table(hallados);
+      break;
+    }
     default:
       console.log('Uso: node src/index.js [listar | agregar | buscar]');
   }
@@ -2626,42 +2651,77 @@ try {
         impact: "ℹ️ Cierre sintáctico."
       },
       19: {
-        tag: "Línea 19 • default:",
+        tag: "Línea 19 • case 'buscar': {",
+        snippet: "    case 'buscar': {",
+        title: "Caso de Búsqueda de Campers",
+        desc: "Se activa cuando el usuario escribe 'buscar <nombre>'. Abre un ámbito de bloque dedicado.",
+        impact: "ℹ️ Permite consultar campers filtrando por nombre."
+      },
+      20: {
+        tag: "Línea 20 • Consulta asíncrona con filtro",
+        snippet: "      const hallados = await buscarCamperPorNombre(arg1);",
+        title: "Búsqueda Asíncrona en JSON",
+        desc: "Llama a la función importada de campers.js pasando arg1 y espera el resultado filtrado.",
+        impact: "ℹ️ Reutilización modular de lógica de negocio."
+      },
+      21: {
+        tag: "Línea 21 • Tabla de resultados",
+        snippet: "      console.table(hallados);",
+        title: "Visualización Tabular",
+        desc: "Formatea las coincidencias encontradas en una tabla legible en la consola.",
+        impact: "ℹ️ Misma experiencia limpia que el comando listar."
+      },
+      22: {
+        tag: "Línea 22 • break del caso buscar",
+        snippet: "      break;",
+        title: "Sentencia break",
+        desc: "Detiene la ejecución del switch para salir sin ejecutar el bloque default.",
+        impact: "ℹ️ Evita fallthrough accidental."
+      },
+      23: {
+        tag: "Línea 23 • Cierre bloque buscar",
+        snippet: "    }",
+        title: "Fin del caso buscar",
+        desc: "Termina el bloque del comando buscar.",
+        impact: "ℹ️ Cierre sintáctico."
+      },
+      24: {
+        tag: "Línea 24 • default:",
         snippet: "    default:",
         title: "Manejo de Comandos Desconocidos",
         desc: "Si el camper escribe un comando que no existe (ej: node src/index.js saludar), el switch salta a esta sección.",
         impact: "ℹ️ Captura de entradas no reconocidas."
       },
-      20: {
-        tag: "Línea 20 • Menú de ayuda de consola",
+      25: {
+        tag: "Línea 25 • Menú de ayuda de consola",
         snippet: "      console.log('Uso: node src/index.js [listar | agregar | buscar]');",
         title: "Menú de Ayuda al Usuario",
         desc: "Muestra la sintaxis correcta del CLI para orientar al alumno sobre los comandos disponibles.",
         impact: "ℹ️ Guiado amigable para el alumno."
       },
-      21: {
-        tag: "Línea 21 • Cierre del switch",
+      26: {
+        tag: "Línea 26 • Cierre del switch",
         snippet: "  }",
         title: "Fin del switch",
         desc: "Cierra la estructura condicional de comandos.",
         impact: "ℹ️ Cierre sintáctico."
       },
-      22: {
-        tag: "Línea 22 • Bloque catch global",
+      27: {
+        tag: "Línea 27 • Bloque catch global",
         snippet: "} catch (err) {",
         title: "Captura Global de Errores",
         desc: "Atrapa cualquier excepción lanzada durante la ejecución del comando (por ejemplo, si faltaba el nombre del camper).",
         impact: "ℹ️ Previene caídas bruscas del proceso de Node."
       },
-      23: {
-        tag: "Línea 23 • console.error descriptivo",
+      28: {
+        tag: "Línea 28 • console.error descriptivo",
         snippet: "  console.error('❌ Error:', err.message);",
         title: "Respuesta de Error Amigable",
         desc: "Imprime el mensaje de error en rojo limpio con un icono y no muestra un stacktrace kilométrico innecesario.",
         impact: "ℹ️ Principio de calidad en Campuslands."
       },
-      24: {
-        tag: "Línea 24 • Cierre del try/catch",
+      29: {
+        tag: "Línea 29 • Cierre del try/catch",
         snippet: "}",
         title: "Fin del script principal",
         desc: "Cierra el bloque try/catch global de src/index.js.",
