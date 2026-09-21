@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "nombre": "Carlos Morales",
+    "stack": "Node.js & Express",
+    "creadoEn": "21/09/2026"
+  },
+  {
+    "id": 2,
+    "nombre": "Sofia Castro",
+    "stack": "React & Next.js",
+    "creadoEn": "21/09/2026"
+  }
+]
