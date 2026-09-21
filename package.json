@@ -1,0 +1,27 @@
+{
+  "name": "campuslands-nodejs-ejercicio-basico-interactivo",
+  "version": "1.0.0",
+  "description": "Ejercicio práctico interactivo en Node.js puro con EcmaScript Modules (ESM) para estudiantes de Campuslands.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "interactivo": "node src/interactivo.js",
+    "test:cli": "node src/index.js listar"
+  },
+  "keywords": [
+    "campuslands",
+    "nodejs",
+    "esm",
+    "ecmascript",
+    "cli",
+    "fs-promises",
+    "readline"
+  ],
+  "author": "Campuslands",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
