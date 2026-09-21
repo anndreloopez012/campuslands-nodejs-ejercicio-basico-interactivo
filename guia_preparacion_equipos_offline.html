@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual Técnico: Preparación de Equipos para Evaluación Offline | Campuslands</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    @page {
+      size: letter;
+      margin: 8mm 12mm 8mm 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #0f172a;
+      background-color: #ffffff;
+      line-height: 1.36;
+      font-size: 8.3pt;
+    }
+
+    /* Header Banner */
+    .header-table {
+      width: 100%;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 7pt;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .doc-title {
+      font-size: 14pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.15;
+    }
+
+    .doc-subtitle {
+      font-size: 9pt;
+      font-weight: 600;
+      color: #0284c7;
+    }
+
+    .meta-box {
+      text-align: right;
+      font-size: 7.5pt;
+      color: #475569;
+      line-height: 1.35;
+    }
+
+    .meta-box strong {
+      color: #0f172a;
+    }
+
+    /* Alert Boxes */
+    .alert {
+      border-radius: 5px;
+      padding: 6px 10px;
+      margin: 8px 0;
+      font-size: 8pt;
+      line-height: 1.35;
+    }
+
+    .alert-danger {
+      background-color: #fef2f2;
+      border-left: 3.5px solid #ef4444;
+      color: #991b1b;
+    }
+
+    .alert-info {
+      background-color: #f0f9ff;
+      border-left: 3.5px solid #0284c7;
+      color: #075985;
+    }
+
+    .alert-success {
+      background-color: #f0fdf4;
+      border-left: 3.5px solid #16a34a;
+      color: #166534;
+    }
+
+    /* Headings */
+    h2 {
+      font-size: 10.2pt;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 7px;
+      margin-bottom: 3px;
+      padding-bottom: 2px;
+      border-bottom: 1.5px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    h3 {
+      font-size: 8.8pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 4px;
+      margin-bottom: 2px;
+    }
+
+    p {
+      margin-bottom: 3px;
+      color: #334155;
+    }
+
+    /* Code Blocks & Inlines */
+    code {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 7.8pt;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 7.6pt;
+      background-color: #0b1120;
+      color: #f8fafc;
+      padding: 5px 8px;
+      border-radius: 4px;
+      margin: 4px 0;
+      line-height: 1.32;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    pre .comment { color: #64748b; font-style: italic; }
+    pre .keyword { color: #38bdf8; font-weight: bold; }
+    pre .cmd { color: #facc15; font-weight: bold; }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 5px 0;
+      font-size: 7.8pt;
+    }
+
+    table.data-table th, table.data-table td {
+      border: 1px solid #cbd5e1;
+      padding: 4px 7px;
+      text-align: left;
+    }
+
+    table.data-table th {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    table.data-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Checklist */
+    .checklist-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 3px;
+      font-size: 7.8pt;
+    }
+
+    .checklist-table td {
+      padding: 3px 5px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    .checkbox-box {
+      width: 12px;
+      height: 12px;
+      border: 1.5px solid #0f172a;
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+      border-radius: 2px;
+    }
+
+    .steps-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 5px 8px;
+      margin: 4px 0;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      font-size: 7pt;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      margin-left: 4px;
+    }
+    .pill-required { background: #fee2e2; color: #b91c1c; }
+    .pill-critical { background: #ffedd5; color: #c2410c; }
+    .pill-success { background: #dcfce7; color: #15803d; }
+
+    .page-break {
+      page-break-after: always;
+    }
+
+    .two-cols {
+      display: flex;
+      gap: 8px;
+    }
+    .col-half {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PÁGINA 1 ==================== -->
+  <table class="header-table">
+    <tr>
+      <td style="width: 65%;">
+        <span class="brand-badge">Campuslands • Infraestructura Técnica</span>
+        <h1 class="doc-title">Manual de Preparación de Equipos</h1>
+        <div class="doc-subtitle">Evaluación Diagnóstica Backend en Entorno Offline (Sin Internet)</div>
+      </td>
+      <td class="meta-box" style="width: 35%;">
+        <strong>Examen:</strong> Backend Node.js · SQL · Fundamentos IA<br>
+        <strong>Duración:</strong> 120 minutos | <strong>Modalidad:</strong> Individual<br>
+        <strong>Destinatario:</strong> Técnico de Laboratorio / Tutor<br>
+        <strong>Objetivo:</strong> Salón 100% blindado para trabajo local
+      </td>
+    </tr>
+  </table>
+
+  <div class="alert alert-danger">
+    <strong>⚠️ REGLA CRÍTICA DE LA PRUEBA:</strong> Los alumnos trabajarán <strong>estrictamente sin conexión a internet</strong> y deberán crear su solución desde cero (<code>npm init -y</code>). Si no se ejecuta el <strong>precalentamiento del caché de npm</strong> y la configuración de <strong>PostgreSQL/MySQL local</strong>, <code>npm install express</code> fallará con error de red y la evaluación se interrumpirá.
+  </div>
+
+  <h2>1. Software Base Obligatorio por Computadora</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 24%;">Software</th>
+        <th style="width: 18%;">Versión</th>
+        <th style="width: 58%;">Parámetros de Instalación / Verificación</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Node.js + npm</strong></td>
+        <td>v18.0+ o v20 LTS <span class="badge-pill pill-required">Vital</span></td>
+        <td>Descargar de <code>nodejs.org</code>. Marcar <em>"Add to PATH"</em>. Verificar en terminal con <code>node -v</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>PostgreSQL (o MySQL)</strong></td>
+        <td>v15 / v16 <span class="badge-pill pill-required">Recomendado</span></td>
+        <td>Servicio activo en puerto <code>5432</code>. Usuario: <code>postgres</code> | Contraseña: <code>postgres</code> (o <code>campuslands</code>).</td>
+      </tr>
+      <tr>
+        <td><strong>Visual Studio Code</strong></td>
+        <td>Última estable</td>
+        <td>Editor principal de código con extensiones preinstaladas (ver Sección 3).</td>
+      </tr>
+      <tr>
+        <td><strong>DBeaver Community</strong></td>
+        <td>Última estable</td>
+        <td>Cliente gráfico SQL para que el alumno explore tablas y ejecute <code>database.sql</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Compresor ZIP</strong></td>
+        <td>Nativo / 7-Zip</td>
+        <td>Para generar el entregable final comprimido <code>.zip</code> sin la carpeta <code>node_modules</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. El Paso Maestro: Pre-calentar el Caché de npm (Vital para Modo Offline)</h2>
+  <p>Cuando un alumno haga <code>npm install express dotenv pg</code> sin internet, npm acudirá a su caché local en disco. Si ejecutamos este comando previo con conexión, los paquetes se instalarán en 2 segundos <strong>sin tocar internet</strong>:</p>
+
+  <div class="steps-card">
+    <h3>A. En Windows (PowerShell como Administrador):</h3>
+    <pre><span class="cmd">mkdir</span> C:\temp-warmup; <span class="cmd">cd</span> C:\temp-warmup; <span class="cmd">npm init -y</span>; <span class="cmd">npm install express dotenv pg mysql2 cors nodemon</span>; <span class="cmd">cd</span> C:\; <span class="cmd">Remove-Item -Recurse -Force</span> C:\temp-warmup</pre>
+
+    <h3 style="margin-top: 5px;">B. En Linux / macOS (Terminal):</h3>
+    <pre><span class="cmd">mkdir</span> -p /tmp/npm-warmup && <span class="cmd">cd</span> /tmp/npm-warmup && <span class="cmd">npm init -y</span> && <span class="cmd">npm install express dotenv pg mysql2 cors nodemon</span> && <span class="cmd">cd</span> /tmp && <span class="cmd">rm -rf</span> /tmp/npm-warmup</pre>
+  </div>
+
+  <div class="alert alert-info">
+    <strong>💡 ¿Qué hace este paso?</strong> Descarga en el almacenamiento local permanente de npm (<code>%LocalAppData%\npm-cache</code> o <code>~/.npm</code>) todos los paquetes típicos de backend. Durante la prueba offline, npm los servirá automáticamente desde el disco duro.
+  </div>
+
+  <h2>3. Extensiones Obligatorias en Visual Studio Code</h2>
+  <p>Postman suele bloquearse, congelarse o solicitar login online si no detecta red. Por ello, debemos dejar VS Code equipado para pruebas de API locales:</p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Extensión</th>
+        <th style="width: 25%;">ID de Instalación</th>
+        <th style="width: 50%;">Utilidad durante la Evaluación</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>REST Client</strong> <span class="badge-pill pill-critical">Imprescindible</span></td>
+        <td><code>humao.rest-client</code></td>
+        <td>Permite probar <code>POST /incidents</code>, <code>GET</code> y <code>PATCH</code> desde archivos <code>.http</code> con un clic.</td>
+      </tr>
+      <tr>
+        <td><strong>Thunder Client</strong></td>
+        <td><code>rangav.vscode-thunder-client</code></td>
+        <td>Cliente visual tipo Postman integrado dentro de VS Code (funciona 100% offline).</td>
+      </tr>
+      <tr>
+        <td><strong>Prettier</strong></td>
+        <td><code>esbenp.prettier-vscode</code></td>
+        <td>Formateador automático de código (evaluado en legibilidad del proyecto).</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <p style="margin-top: 4px;"><strong>Comando CLI para instalarlas en lote desde la terminal:</strong></p>
+  <pre><span class="cmd">code --install-extension</span> humao.rest-client <span class="cmd">--install-extension</span> rangav.vscode-thunder-client <span class="cmd">--install-extension</span> esbenp.prettier-vscode</pre>
+
+  <!-- FIN DE PÁGINA 1 -->
+  <div class="page-break"></div>
+
+  <!-- ==================== PÁGINA 2 ==================== -->
+  <table class="header-table">
+    <tr>
+      <td style="width: 65%;">
+        <span class="brand-badge">Campuslands • Infraestructura Técnica</span>
+        <h1 class="doc-title">Manual de Preparación de Equipos</h1>
+        <div class="doc-subtitle">Base de Datos · Testing Nativo · Credenciales · Checklist Final</div>
+      </td>
+      <td class="meta-box" style="width: 35%;">
+        <strong>Página 2 de 2</strong><br>
+        Verificación y Checklist Técnico
+      </td>
+    </tr>
+  </table>
+
+  <h2>4. Configuración de la Base de Datos SQL Local en cada PC</h2>
+  <p>El examen exige crear tablas para <code>usuarios</code> e <code>incidentes</code>. El técnico debe asegurar que el motor esté corriendo localmente:</p>
+
+  <div class="steps-card">
+    <table style="width: 100%; border: none;">
+      <tr>
+        <td style="width: 50%; vertical-align: top; padding-right: 8px;">
+          <h3>Opción A: PostgreSQL (Recomendada)</h3>
+          <p>1. Verificar que el servicio esté iniciado en Windows (<code>Servicios</code> ➔ <code>postgresql-x64-XX</code> ➔ Iniciar).</p>
+          <p>2. Crear la base de datos para el examen ejecutando:</p>
+          <pre><span class="cmd">psql -U postgres -c</span> <span class="string">"CREATE DATABASE incidents_db;"</span></pre>
+          <p>3. Credenciales: Host: <code>localhost:5432</code> | User: <code>postgres</code> | Clave: <code>postgres</code>.</p>
+        </td>
+        <td style="width: 50%; vertical-align: top; padding-left: 8px; border-left: 1px solid #cbd5e1;">
+          <h3>Opción B: MySQL (XAMPP / Server)</h3>
+          <p>1. Verificar en XAMPP que el módulo MySQL esté en verde (puerto <code>3306</code>).</p>
+          <p>2. Crear la base de datos para el examen ejecutando:</p>
+          <pre><span class="cmd">mysql -u root -e</span> <span class="string">"CREATE DATABASE incidents_db;"</span></pre>
+          <p>3. Credenciales: Host: <code>localhost:3306</code> | User: <code>root</code> | Sin contraseña.</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>5. Pruebas Automatizadas sin Internet (Requisito Obligatorio #9)</h2>
+  <div class="alert alert-success">
+    <strong>💡 VENTAJA TÉCNICA CLAVE:</strong> No intente instalar Jest o Mocha. Node.js v18/20+ incluye de forma nativa el motor <code>node:test</code> y las aserciones <code>node:assert</code>. Los alumnos solo deben importar <code>import test from 'node:test'</code> y ejecutar <code>node --test</code> en la terminal. Funciona al 100% sin dependencias ni internet.
+  </div>
+
+  <h2>6. Nota de Credenciales para el Alumno (Dejar en el Escritorio)</h2>
+  <p>Cree un archivo llamado <code>DATOS_LOCALES_EXAMEN.txt</code> en el <strong>Escritorio</strong> de cada computadora con esta información:</p>
+
+  <pre style="background: #1e293b; color: #f8fafc; font-size: 7.5pt; margin: 4px 0;"><span class="comment">======================================================================
+CAMPUSLANDS - DATOS DE ENTORNO LOCAL PARA EVALUACIÓN BACKEND
+======================================================================</span>
+1. BASE DE DATOS LOCAL:
+   - Motor: PostgreSQL | Host: localhost:5432 | BD: incidents_db
+   - Usuario: postgres | Contraseña: postgres (o campuslands)
+
+2. CÓMO PROBAR ENDPOINTS SIN POSTMAN (Extensión REST Client):
+   - Crea un archivo 'requests.http' en tu proyecto en VS Code.
+   - Escribe tu endpoint (ej: GET http://localhost:3000/incidents).
+   - Haz clic sobre el enlace azul 'Send Request' que aparece sobre la línea.
+
+3. PRUEBAS AUTOMATIZADAS (Cero librerías externas necesarias):
+   - Usa el módulo nativo de Node.js: import test from 'node:test';
+   - Ejecuta tus pruebas en terminal con: node --test
+
+4. ENTREGA FINAL:
+   - Comprime tu solución en un archivo .zip
+   - REGLA: NO incluyas la carpeta 'node_modules' en el .zip entregado.
+======================================================================</pre>
+
+  <h2>7. "Prueba de Fuego" y Checklist de Certificación Técnica</h2>
+  <p>Antes de habilitar el salón, el técnico debe realizar esta prueba de 60 segundos <strong>con el Wi-Fi apagado y el cable de red desconectado</strong>:</p>
+
+  <table class="checklist-table">
+    <tr>
+      <td style="width: 5%; text-align: center;"><div class="checkbox-box"></div></td>
+      <td style="width: 32%;"><strong>1. Desconexión de Red</strong></td>
+      <td style="width: 63%;">Desconectar cable Ethernet y apagar Wi-Fi en el equipo.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><div class="checkbox-box"></div></td>
+      <td><strong>2. Prueba de npm Offline</strong></td>
+      <td>
+        Ejecutar en terminal: <code>mkdir test-offline && cd test-offline && npm init -y && npm install express dotenv pg</code>.<br>
+        <em>Debe instalarse en menos de 5 segundos sin errores. Luego borrar la carpeta.</em>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><div class="checkbox-box"></div></td>
+      <td><strong>3. Conexión SQL en DBeaver</strong></td>
+      <td>DBeaver conecta exitosamente a <code>localhost:5432</code> (o <code>3306</code>) y visualiza la base <code>incidents_db</code>.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><div class="checkbox-box"></div></td>
+      <td><strong>4. Extensión REST Client</strong></td>
+      <td>VS Code tiene activa la extensión <code>REST Client</code> para probar peticiones HTTP.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><div class="checkbox-box"></div></td>
+      <td><strong>5. Archivo en el Escritorio</strong></td>
+      <td>El archivo <code>DATOS_LOCALES_EXAMEN.txt</code> está ubicado y visible en el Escritorio.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;"><div class="checkbox-box"></div></td>
+      <td><strong>6. Limpieza Previa</strong></td>
+      <td>Papelera vacía y sin proyectos residuales previos para que el camper inicie limpio.</td>
+    </tr>
+  </table>
+
+  <div style="margin-top: 8px; text-align: center; font-size: 7.5pt; color: #64748b; border-top: 1px solid #cbd5e1; padding-top: 4px;">
+    Campuslands • Dirección Académica &amp; Soporte Técnico • Documento Oficial de Preparación de Laboratorios
+  </div>
+
+</body>
+</html>
