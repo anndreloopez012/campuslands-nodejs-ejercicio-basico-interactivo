@@ -27,7 +27,7 @@ Al realizar cambios en este repositorio, los agentes deben cumplir estrictamente
    - Actualizar el grafo: `graphify update .` o `graphify .`.
    - Exportar a Obsidian:
      ```bash
-     graphify export obsidian --dir "$HOME/Documents/Obsidian Vault/Memoria/Graphify/campuslands-nodejs-ejercicio-basico-interactivo"
+     graphify export obsidian --dir "$HOME/Documents/OBSIDIAN/PROGRAMACION/Graphify/campuslands-nodejs-ejercicio-basico-interactivo"
      ```
    - Sincronizar memoria: `memoria refresh`.
    - Registrar validaciones o decisiones:
